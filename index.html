@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<title>تطبيق غرس الشتاء - مسجد القعقاع</title>
+<link rel="icon" type="image/png" href="https://img.icons8.com/color/96/ mosque.png">
+<link rel="apple-touch-icon" href="https://img.icons8.com/color/192/ mosque.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<style>
+:root{
+  --font-family:'Cairo',sans-serif;
+  --bg-login:linear-gradient(135deg, #1E3A8A 0%, #0284C7 50%, #0F172A 100%);
+  --bg-home:linear-gradient(180deg, #F0F9FF 0%, #E0F2FE 100%);
+  --theme-awrad:#F0FDF4;
+  --theme-injaz:#FDF2F8;
+  --theme-awsima:#F5F3FF;
+  --theme-niqati:#FEFCE8;
+  --theme-tahaddiyat:#EFF6FF;
+  --theme-avatar:#FFF7ED;
+  --theme-yawmi:#ECFDF5;
+  --theme-dustour:#FFFBEB;
+  --text-dark:#1E293B;
+  --text-sub:#64748B;
+  --shadow-soft:0 12px 30px rgba(0, 0, 0, 0.08);
+  --radius-xl:28px;
+  --radius-lg:20px;
+  --radius-md:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:var(--font-family);-webkit-tap-highlight-color:transparent;user-select:none}
+body{background-color:#0f172a;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;padding:10px;overflow:hidden}
+.phone-frame{width:100%;max-width:460px;height:92vh;max-height:920px;background:var(--bg-home);position:relative;overflow:hidden;display:flex;flex-direction:column;border-radius:36px;box-shadow:0 25px 60px rgba(0,0,0,.5);border:4px solid #334155}
+.screen-login{position:absolute;inset:0;background:var(--bg-login);z-index:1000;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:30px 20px;text-align:center;transition:transform .5s cubic-bezier(.4,0,.2,1);overflow:hidden}
+.screen-login.hidden{transform:translateY(-100%)}
+.snowflake{position:absolute;top:-30px;color:#e0f2fe;font-size:24px;opacity:.8;pointer-events:none;animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(1000px) rotate(360deg)}}
+.login-icon-mosque{font-size:70px;color:#fff;margin-bottom:15px;filter:drop-shadow(0 10px 20px rgba(255, 255, 255, .3))}
+.app-title{font-size:38px;font-weight:900;color:#fff;margin-bottom:5px}
+.app-subtitle{font-size:16px;font-weight:700;color:#bae6fd;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);padding:6px 20px;border-radius:20px;margin-bottom:35px;border:1px solid rgba(255,255,255,.2)}
+.pass-input{width:85%;padding:16px;border-radius:var(--radius-lg);border:3px solid #38bdf8;background:rgba(255,255,255,.95);font-size:26px;text-align:center;letter-spacing:10px;outline:0;margin-bottom:20px;color:#0f172a;box-shadow:0 10px 20px rgba(0,0,0,.2)}
+.btn-login{width:85%;padding:16px;border-radius:var(--radius-lg);border:none;background:linear-gradient(135deg,#38bdf8,#0284c7);color:#fff;font-size:20px;font-weight:800;cursor:pointer;box-shadow:0 10px 25px rgba(56,189,248,.4);transition:transform .1s}
+.btn-login:active{transform:scale(.96)}
+.error-msg{color:#fca5a5;font-size:15px;font-weight:700;margin-top:15px;display:none}
+.loading-box{color:#e0f2fe;font-size:15px;font-weight:700;margin-top:15px;display:none;align-items:center;gap:10px;justify-content:center}
+.spinner{width:22px;height:22px;border:3px solid rgba(255,255,255,0.3);border-top:3px solid #38bdf8;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+
+.top-app-bar{height:75px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid rgba(0,0,0,.06);z-index:500;flex-shrink:0}
+.bar-student-name{font-size:19px;font-weight:800;color:var(--text-dark)}
+.bar-week-tag{font-size:13px;font-weight:700;color:var(--text-sub)}
+.bar-left-actions{display:flex;align-items:center;gap:12px}
+.action-btn-icon{font-size:20px;color:#475569;cursor:pointer;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f1f5f9;position:relative}
+.mail-badge{position:absolute;top:-2px;right:-2px;background:#ef4444;color:#fff;font-size:11px;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.mailbox-dropdown{position:absolute;top:80px;left:15px;right:15px;background:#fff;border-radius:var(--radius-lg);box-shadow:0 20px 40px rgba(0,0,0,.2);padding:20px;z-index:600;display:none;border:1px solid #e2e8f0}
+.msg-item{background:#f8fafc;border-radius:var(--radius-md);padding:14px;margin-top:10px;border-right:5px solid #0284c7}
+.screen-main-home{flex:1;padding:20px 16px;display:flex;flex-direction:column;overflow-y:auto;gap:20px}
+.welcome-header-card{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);padding:16px 20px;border-radius:var(--radius-xl);border:1px solid rgba(255,255,255,.9);box-shadow:var(--shadow-soft)}
+.welcome-text h3{font-size:22px;font-weight:900;color:var(--text-dark)}
+.welcome-text p{font-size:14px;font-weight:700;color:var(--text-sub)}
+.avatar-preview-btn{width:70px;height:70px;border-radius:50%;background:#e0f2fe;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 15px rgba(0,0,0,.1);border:3px solid #fff;position:relative;overflow:hidden;flex-shrink:0}
+.floating-icons-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.floating-icon-card{display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,.7);padding:18px 10px;border-radius:var(--radius-xl);box-shadow:var(--shadow-soft);border:1px solid #fff;transition:transform 0.15s ease}
+.floating-icon-card:active{transform:scale(0.96)}
+.floating-icon-svg{width:70px;height:70px;display:flex;align-items:center;justify-content:center;font-size:36px;border-radius:50%;margin-bottom:10px;box-shadow:0 10px 20px rgba(0,0,0,.08)}
+.floating-icon-title{font-size:16px;font-weight:800;color:var(--text-dark);text-align:center}
+.section-view{position:absolute;inset:75px 0 0 0;z-index:400;padding:20px 16px;overflow-y:auto;display:none}
+.section-view.active{display:block;animation:slideInView .3s ease forwards}
+@keyframes slideInView{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+#view-awrad{background:var(--theme-awrad)}
+#view-injaz{background:var(--theme-injaz)}
+#view-awsima{background:var(--theme-awsima)}
+#view-niqati{background:var(--theme-niqati)}
+#view-tahaddiyat{background:var(--theme-tahaddiyat)}
+#view-avatar{background:var(--theme-avatar)}
+#view-yawmi{background:var(--theme-yawmi)}
+#view-dustour{background:var(--theme-dustour)}
+.view-title-block{margin-bottom:20px}
+.view-title-block h2{font-size:26px;font-weight:900}
+.view-title-block p{font-size:14px;color:var(--text-sub)}
+.dhikr-card{background:#fff;border-radius:var(--radius-lg);padding:18px;margin-bottom:15px;box-shadow:var(--shadow-soft);border:1px solid #dcfce7}
+.dhikr-text{font-size:19px;font-weight:800;color:#166534;margin-bottom:8px}
+.dhikr-hadith{font-size:13px;color:#374151;line-height:1.5;background:#f0fdf4;padding:12px;border-radius:var(--radius-md);margin-bottom:15px}
+.dhikr-counter-row{display:flex;align-items:center;justify-content:space-between;background:#f0fdf4;padding:10px 16px;border-radius:var(--radius-md);border:1px solid #bbf7d0;position:relative}
+.dhikr-val-text{font-size:28px;font-weight:900;color:#15803d}
+.dhikr-btn-group{display:flex;align-items:center;gap:12px}
+.reset-circle-btn{width:42px;height:42px;border-radius:50%;background:#fee2e2;color:#ef4444;border:1px solid #fca5a5;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.reset-circle-btn:active{transform:scale(.88);background:#fca5a5}
+.plus-circle-btn{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;font-size:28px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 15px rgba(16,185,129,.3);transition:transform 0.1s}
+.plus-circle-btn:active{transform:scale(0.9)}
+@keyframes sparkFloatUp{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-40px) scale(1.4);}}
+.dhikr-pop-spark{position:absolute;left:20px;color:#10b981;font-weight:900;font-size:20px;pointer-events:none;animation:sparkFloatUp 0.6s ease-out forwards}
+.form-card{background:#fff;border-radius:var(--radius-lg);padding:18px;margin-bottom:15px;box-shadow:var(--shadow-soft);border:1px solid #a7f3d0}
+.form-card h4{font-size:17px;font-weight:800;color:#065f46;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:14px;font-weight:800;color:#374151;margin-bottom:6px}
+.form-control{width:100%;padding:12px;border-radius:var(--radius-md);border:2px solid #cbd5e1;background:#f8fafc;font-size:15px;font-weight:700;outline:none;color:#0f172a}
+.form-control:focus{border-color:#10b981;background:#fff}
+.checkbox-row{display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:800;font-size:16px;color:#065f46;margin-top:5px}
+.checkbox-row input{width:22px;height:22px;accent-color:#10b981;cursor:pointer}
+.emoji-row{display:flex;justify-content:space-between;gap:8px;margin-top:6px}
+.emoji-btn{flex:1;font-size:24px;padding:8px;background:#f1f5f9;border:2px solid #e2e8f0;border-radius:12px;cursor:pointer;text-align:center;transition:all 0.2s}
+.emoji-btn.selected{background:#d1fae5;border-color:#10b981;transform:scale(1.08);box-shadow:0 4px 10px rgba(16,185,129,0.2)}
+.ayah-box{background:#fff;border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow-soft);border:2px solid #fde68a;text-align:center}
+.ayah-text{font-family:'Amiri', 'Cairo', serif;font-size:24px;font-weight:700;color:#78350f;line-height:2.2;margin-bottom:15px}
+.ayah-exp-btn{background:#f59e0b;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(245,158,11,0.3);transition:transform 0.1s}
+.ayah-exp-btn:active{transform:scale(0.95)}
+.ayah-explanation{background:#fffbeb;padding:15px;border-radius:var(--radius-md);font-size:15px;color:#92400e;text-align:right;line-height:1.6;border-right:4px solid #f59e0b;margin-top:15px;max-height:0;overflow:hidden;opacity:0;transition:all 0.4s ease}
+.ayah-explanation.show{max-height:200px;opacity:1;margin-top:15px;padding:15px}
+.sub-accordion-card{background:#fff;border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;box-shadow:var(--shadow-soft);cursor:pointer}
+.sub-accordion-header{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:18px;color:#831843}
+.sub-accordion-content{display:none;margin-top:12px;padding-top:12px;border-top:1px dashed #fbcfe8;font-size:15px;color:#475569}
+.progress-container{margin-top:10px;background:#fce7f3;border-radius:20px;height:24px;overflow:hidden;position:relative;box-shadow:inset 0 2px 4px rgba(0,0,0,.05)}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,#ec4899,#db2777);width:0%;transition:width 1.5s cubic-bezier(.22,1,.36,1);border-radius:20px;box-shadow:0 0 10px rgba(236,72,153,.5)}
+.badges-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
+.badge-box{background:#fff;border-radius:var(--radius-lg);padding:20px 10px;text-align:center;box-shadow:var(--shadow-soft);opacity:.4;transform:scale(.95);transition:all .4s ease;position:relative;overflow:hidden}
+.badge-box.lit{opacity:1;transform:scale(1);border:2px solid #8b5cf6;animation:badgePop .8s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 10px 25px rgba(139,92,246,.25)}
+@keyframes badgePop{0%{transform:scale(.7) rotate(-10deg);opacity:0}50%{transform:scale(1.1) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.badge-icon-img{font-size:45px;margin-bottom:8px}
+.badge-box.lit .badge-icon-img{animation:iconPulse 2s infinite ease-in-out}
+@keyframes iconPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.badge-name{font-size:16px;font-weight:800;color:#4c1d95}
+.points-summary-card{background:linear-gradient(135deg,#fef08a,#fde047);border-radius:var(--radius-xl);padding:22px;text-align:center;margin-bottom:20px;box-shadow:var(--shadow-soft);transition:all 0.3s ease}
+.points-val{font-size:55px;font-weight:900;color:#713f12}
+
+.podium-container{display:flex;align-items:flex-end;justify-content:flex-start;gap:8px;margin:20px auto;min-height:190px;width:100%;max-width:100%;padding:10px 5px;box-sizing:border-box;overflow-x:auto;scroll-behavior:smooth}
+.podium-container::-webkit-scrollbar{height:6px}
+.podium-container::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px}
+.podium-step{flex:0 0 95px;min-width:95px;background:#fff;border-radius:14px 14px 0 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:10px 4px;box-shadow:var(--shadow-soft);opacity:0.35;filter:grayscale(60%);transition:all .4s ease;box-sizing:border-box}
+.podium-step.rank-1{background:linear-gradient(180deg,#FFFBEB,#FEF08A);border:2px solid #EAB308}
+.podium-step.rank-2{background:linear-gradient(180deg,#F8FAFC,#E2E8F0);border:2px solid #94A3B8}
+.podium-step.rank-3{background:linear-gradient(180deg,#FFF7ED,#FFEDD5);border:2px solid #F97316}
+
+.podium-step.active-student{opacity:1!important;filter:none!important;transform:scale(1.08);z-index:10;box-shadow:0 0 20px rgba(234,179,8,0.8);border:3px solid #EAB308}
+
+.leaderboard-msg{background:#fff;padding:16px;border-radius:var(--radius-lg);text-align:center;font-weight:800;font-size:15px;color:#854d0e;box-shadow:var(--shadow-soft);line-height:1.6}
+.sub-game-card{background:#fff;border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;box-shadow:var(--shadow-soft)}
+.wheel-wrapper{position:relative;width:220px;height:220px;margin:15px auto}
+.wheel-canvas{width:100%;height:100%;border-radius:50%;transition:transform 3.5s cubic-bezier(.15,.99,.15,.99)}
+.wheel-pointer{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:26px;color:#ef4444;z-index:10}
+.wordle-grid-container{display:flex;flex-direction:column;gap:8px;margin:15px 0;align-items:center}
+.wordle-row{display:flex;gap:6px;direction:rtl}
+.wordle-box{width:45px;height:50px;border:2px solid #cbd5e1;border-radius:10px;font-size:22px;font-weight:800;text-align:center;line-height:48px}
+.wordle-box.correct{background:#10b981;color:#fff;border-color:#10b981}
+.wordle-box.misplaced{background:#f59e0b;color:#fff;border-color:#f59e0b}
+.wordle-box.wrong{background:#64748b;color:#fff;border-color:#64748b}
+.wordle-color-legend{display:flex;justify-content:space-around;align-items:center;background:#f8fafc;padding:10px;border-radius:12px;margin-bottom:12px;border:1px dashed #cbd5e1}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:#334155}
+.legend-box{width:16px;height:16px;border-radius:4px}
+.avatar-display-large{width:180px;height:180px;border-radius:50%;margin:0 auto 20px;box-shadow:0 12px 25px rgba(0,0,0,.12);border:5px solid #fff;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.avatar-option-group{background:#fff;border-radius:var(--radius-lg);padding:15px;margin-bottom:14px;box-shadow:var(--shadow-soft)}
+.avatar-option-group label{font-size:15px;font-weight:800;color:var(--text-sub);display:block;margin-bottom:10px}
+.opt-buttons{display:flex;gap:8px;overflow-x:auto;padding-bottom:5px}
+.opt-btn{padding:8px 16px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap}
+.hijabi-avatar-svg{width:100%;height:100%}
+
+.custom-modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.6);z-index:2000;display:none;justify-content:center;align-items:center;padding:20px}
+.custom-modal{background:#fff;border-radius:var(--radius-xl);padding:25px;width:100%;max-width:320px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,0.3);animation:modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)}
+@keyframes modalPop{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
+.custom-modal h3{font-size:20px;font-weight:900;color:var(--text-dark);margin-bottom:10px}
+.custom-modal p{font-size:15px;color:var(--text-sub);margin-bottom:20px;font-weight:700}
+.modal-btn-group{display:flex;gap:10px}
+.modal-btn{flex:1;padding:12px;border-radius:var(--radius-md);border:none;font-size:16px;font-weight:800;cursor:pointer}
+.modal-btn-confirm{background:#ef4444;color:#fff;box-shadow:0 4px 12px rgba(239,68,68,0.3)}
+.modal-btn-cancel{background:#f1f5f9;color:#475569}
+</style>
+</head>
+<body>
+<div class="phone-frame" id="phoneFrame">
+  
+  <div id="screenLogin" class="screen-login">
+    <div id="snowContainer"></div>
+    <div class="login-icon-mosque">🕌</div>
+    <h1 class="app-title">غرس الشتاء</h1>
+    <div class="app-subtitle">مسجد القعقاع - شتاء 1448هـ</div>
+    <input type="password" id="studentPass" class="pass-input" placeholder="••••" maxlength="6">
+    <button class="btn-login" onclick="login()">تسجيل الدخول ✨</button>
+    <div id="errorMsg" class="error-msg">رمز السر غير صحيح، حاولي مجدداً</div>
+    <div id="loadingBox" class="loading-box"><div class="spinner"></div>جارٍ التحقق من كلمة السر وجلب البيانات.. ⏳</div>
+  </div>
+
+  <div class="top-app-bar">
+    <div style="display:flex;flex-direction:column">
+      <span id="barStudentName" class="bar-student-name">أهلاً بكِ</span>
+      <span id="barWeekTag" class="bar-week-tag">مسجد القعقاع</span>
+    </div>
+    <div class="bar-left-actions">
+      <div style="position:relative" onclick="toggleMailbox()">
+        <div class="action-btn-icon"><i class="fa-solid fa-envelope"></i></div>
+        <div id="mailBadge" class="mail-badge" style="display:none">1</div>
+      </div>
+      <div class="action-btn-icon" title="تسجيل الخروج" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket" style="color:#ef4444"></i></div>
+      <div id="backBtn" class="action-btn-icon" style="display:none" onclick="navToHome()"><i class="fa-solid fa-arrow-left"></i></div>
+    </div>
+    
+    <div id="mailboxDropdown" class="mailbox-dropdown">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <h4 style="font-size:18px;font-weight:800">صندوق الرسائل 💌</h4>
+        <i class="fa-solid fa-xmark" style="cursor:pointer" onclick="toggleMailbox()"></i>
+      </div>
+      <div id="messagesList">
+        <div class="msg-item">
+          <div style="font-size:15px;font-weight:800;color:#0f172a" id="msgTitleBox">رسالة من المعلمة 🌸</div>
+          <div style="font-size:13px;color:#475569;margin-top:4px" id="msgContentBox">أهلاً بكِ يا حبيبة في دورة غرس الشتاء! حافظي على برنامجك اليومي وأورادكِ.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="screenHome" class="screen-main-home">
+    <div class="welcome-header-card">
+      <div class="welcome-text">
+        <h3 id="homeWelcomeTitle">أهلاً بكِ</h3>
+        <p>مستعدة لإنجاز اليوم؟ 🌱</p>
+      </div>
+      <div class="avatar-preview-btn" onclick='openSection("avatar")'>
+        <div id="avatarPreviewContainer" style="width:100%;height:100%"></div>
+      </div>
+    </div>
+
+    <div class="floating-icons-grid">
+      <div class="floating-icon-card" onclick='openSection("yawmi")'>
+        <div class="floating-icon-svg" style="background:#a7f3d0;color:#065f46">📋</div>
+        <div class="floating-icon-title">برنامجي</div>
+      </div>
+      <div class="floating-icon-card" onclick='openSection("awrad")'>
+        <div class="floating-icon-svg" style="background:#dcfce7;color:#166534">🍃</div>
+        <div class="floating-icon-title">أوراد وأذكار</div>
+      </div>
+      <div class="floating-icon-card" onclick='openSection("dustour")'>
+        <div class="floating-icon-svg" style="background:#fef3c7;color:#b45309">📖</div>
+        <div class="floating-icon-title">دستوري</div>
+      </div>
+      <div class="floating-icon-card" onclick='openSection("injaz")'>
+        <div class="floating-icon-svg" style="background:#fce7f3;color:#9d174d">📊</div>
+        <div class="floating-icon-title">إنجازي</div>
+      </div>
+      <div class="floating-icon-card" onclick='openSection("awsima")'>
+        <div class="floating-icon-svg" style="background:#ede9fe;color:#5b21b6">🏅</div>
+        <div class="floating-icon-title">أوسمتي</div>
+      </div>
+      <div class="floating-icon-card" onclick='openSection("niqati")'>
+        <div class="floating-icon-svg" style="background:#fef08a;color:#854d0e">⭐</div>
+        <div class="floating-icon-title">نقاطي وترتيبي</div>
+      </div>
+      <div class="floating-icon-card" style="grid-column:span 2" onclick='openSection("tahaddiyat")'>
+        <div class="floating-icon-svg" style="background:#dbeafe;color:#1e40af;width:80px;height:80px">🎮</div>
+        <div class="floating-icon-title">تحديات وفائدة</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-yawmi" class="section-view">
+    <div class="view-title-block">
+      <h2 style="color:#065f46">برنامجي 📋</h2>
+      <p id="todayDateLabel">اليوم:</p>
+    </div>
+    <div class="form-card">
+      <h4>🕌 الصلوات الخمس</h4>
+      <div class="form-group">
+        <label>صلّيت:</label>
+        <select id="yawmiPrayers" class="form-control">
+          <option value="0">0 صلوات</option>
+          <option value="1">صلاة واحدة</option>
+          <option value="2">صلاتان</option>
+          <option value="3">3 صلوات</option>
+          <option value="4">4 صلوات</option>
+          <option value="5">الصلوات الخمس كاملة 🌟</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-card">
+      <h4>☀️ السنن</h4>
+      <div class="form-group">
+        <label>السنن الرواتب:</label>
+        <input type="number" id="yawmiSunan" class="form-control" min="0" max="12" placeholder="عدد ركعات السنة">
+      </div>
+      <div class="form-group">
+        <label>صلاة الوتر:</label>
+        <div class="checkbox-row">
+          <input type="checkbox" id="yawmiWitrCheck">
+          <span>صلّيت الوتر اليوم ✨</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-card">
+      <h4>📜 القرآن والحديث (إدخال اليوم)</h4>
+      <div class="form-group">
+        <label>صفحات القرآن المقروءة اليوم:</label>
+        <input type="number" id="yawmiQuranPages" class="form-control" min="0" placeholder="مثلاً: 5 صفحات">
+      </div>
+      <div class="form-group">
+        <label>صفحات الحديث الشريف المقروءة اليوم:</label>
+        <input type="number" id="yawmiHadithPages" class="form-control" min="0" placeholder="مثلاً: 2 صفحات">
+      </div>
+    </div>
+    <div class="form-card">
+      <h4>📚 دراستي</h4>
+      <div class="form-group">
+        <label>كم ساعة درست اليوم؟</label>
+        <input type="text" id="yawmiStudy" class="form-control" placeholder="مثلاً: 5">
+      </div>
+    </div>
+    <div class="form-card">
+      <h4>💖 بر الوالدين</h4>
+      <div class="form-group">
+        <label>كيف كان بركِ وطاعتكِ لوالديكِ اليوم؟</label>
+        <div class="emoji-row">
+          <button type="button" class="emoji-btn" onclick="setBirr('☺️', this)">☺️</button>
+          <button type="button" class="emoji-btn" onclick="setBirr('🙂', this)">🙂</button>
+          <button type="button" class="emoji-btn" onclick="setBirr('😐', this)">😐</button>
+          <button type="button" class="emoji-btn" onclick="setBirr('😟', this)">😟</button>
+        </div>
+        <input type="hidden" id="yawmiBirrVal" value="">
+      </div>
+    </div>
+    <button class="btn-login" style="background:#059669;width:100%;border-radius:16px;padding:14px;margin-bottom:20px" onclick="saveYawmiData()">حفظ برنامجي 🌟</button>
+  </div>
+
+  <div id="view-awrad" class="section-view">
+    <div class="view-title-block">
+      <h2 style="color:#166534">أوراد وأذكار 🍃</h2>
+      <p>{ألا بذكر الله تطمئن القلوب}</p>
+    </div>
+    <div class="dhikr-card">
+      <div class="dhikr-text">أذكار الصباح ☀️</div>
+      <div class="dhikr-hadith">{وَاذْكُرْ رَبَّكَ فِي نَفْسِكَ تَضَرُّعًا وَخِيفَةً وَدُونَ الْجَهْرِ مِنَ الْقَوْلِ بِالْغُدُوِّ وَالآصَالِ}</div>
+      <div class="dhikr-counter-row" id="row-s1">
+        <span class="dhikr-val-text" id="cnt-s1">0</span>
+        <div class="dhikr-btn-group">
+          <button class="reset-circle-btn" onclick='resetDhikr("s1")'><i class="fa-solid fa-rotate-right"></i></button>
+          <button class="plus-circle-btn" onclick='incDhikr("s1", event)'>+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dhikr-card">
+      <div class="dhikr-text">أذكار المساء 🌙</div>
+      <div class="dhikr-hadith">{وَاذْكُرْ رَبَّكَ فِي نَفْسِكَ تَضَرُّعًا وَخِيفَةً وَدُونَ الْجَهْرِ مِنَ الْقَوْلِ بِالْغُدُوِّ وَالآصَالِ}</div>
+      <div class="dhikr-counter-row" id="row-s2">
+        <span class="dhikr-val-text" id="cnt-s2">0</span>
+        <div class="dhikr-btn-group">
+          <button class="reset-circle-btn" onclick='resetDhikr("s2")'><i class="fa-solid fa-rotate-right"></i></button>
+          <button class="plus-circle-btn" onclick='incDhikr("s2", event)'>+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dhikr-card">
+      <div class="dhikr-text">أستغفر الله العظيم</div>
+      <div class="dhikr-hadith">《مَنْ لَزِمَ الِاسْتِغْفَارَ جَعَلَ اللَّهُ لَهُ مِنْ كُلِّ ضِيقٍ مَخْرَجًا، وَمِنْ كُّلِّ هَمٍّ فَرَجًا》</div>
+      <div class="dhikr-counter-row" id="row-d1">
+        <span class="dhikr-val-text" id="cnt-d1">0</span>
+        <div class="dhikr-btn-group">
+          <button class="reset-circle-btn" onclick='resetDhikr("d1")'><i class="fa-solid fa-rotate-right"></i></button>
+          <button class="plus-circle-btn" onclick='incDhikr("d1", event)'>+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dhikr-card">
+      <div class="dhikr-text">سبحان الله وبحمده سبحان الله العظيم</div>
+      <div class="dhikr-hadith">《حُطَّت خطاياه وإن كانت مثل زبد البحر》</div>
+      <div class="dhikr-counter-row" id="row-d2">
+        <span class="dhikr-val-text" id="cnt-d2">0</span>
+        <div class="dhikr-btn-group">
+          <button class="reset-circle-btn" onclick='resetDhikr("d2")'><i class="fa-solid fa-rotate-right"></i></button>
+          <button class="plus-circle-btn" onclick='incDhikr("d2", event)'>+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dhikr-card">
+      <div class="dhikr-text">لا حول ولا قوة إلا بالله</div>
+      <div class="dhikr-hadith">《كنز من كنوز الجنة》</div>
+      <div class="dhikr-counter-row" id="row-d3">
+        <span class="dhikr-val-text" id="cnt-d3">0</span>
+        <div class="dhikr-btn-group">
+          <button class="reset-circle-btn" onclick='resetDhikr("d3")'><i class="fa-solid fa-rotate-right"></i></button>
+          <button class="plus-circle-btn" onclick='incDhikr("d3", event)'>+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-dustour" class="section-view">
+    <div class="view-title-block">
+      <h2 style="color:#b45309">دستوري 📖</h2>
+    </div>
+    <div class="ayah-box">
+      <div id="dustourAyahText" class="ayah-text">《 وَاعْتَصِمُوا بِحَبْلِ اللَّهِ جَمِيعاً وَلَا تَفَرَّقُوا 》</div>
+      <button class="ayah-exp-btn" onclick="toggleDustourExp()">شرح الآية 💡</button>
+      <div id="dustourExpText" class="ayah-explanation">
+        يأمرنا الله تعالى بالاتحاد والتمسك بدينه القويم، والبعد عن الفرقة والنزاع لما في ذلك من قوة وصلاح للأمة.
+      </div>
+    </div>
+  </div>
+
+  <div id="view-injaz" class="section-view">
+    <div class="view-title-block">
+      <h2 style="color:#9d174d">إنجازي 📊</h2>
+      <p>سجلّ تقدّمك:</p>
+    </div>
+    <div class="sub-accordion-card" onclick='toggleAccordion("acc1")'>
+      <div class="sub-accordion-header"><span>القرآن الكريم 📜</span><i class="fa-solid fa-chevron-down"></i></div>
+      <div id="acc1" class="sub-accordion-content">لم يتم تسجيل حفظ جديد بعد</div>
+    </div>
+    <div class="sub-accordion-card" onclick='toggleAccordion("acc2")'>
+      <div class="sub-accordion-header"><span>الحديث الشريف 💬</span><i class="fa-solid fa-chevron-down"></i></div>
+      <div id="acc2" class="sub-accordion-content">لم يتم تسجيل حديث جديد بعد</div>
+    </div>
+    <div class="sub-accordion-card" onclick='toggleAccordion("acc3")'>
+      <div class="sub-accordion-header"><span>نسبة تحقيق هدف القرآن (الشّهري) 🎯</span><i class="fa-solid fa-chevron-down"></i></div>
+      <div id="acc3" class="sub-accordion-content">
+        <div style="display:flex;justify-content:space-between;font-weight:800;font-size:15px"><span>الإنجاز الشهري للقرآن</span><span id="progressTextVal">0%</span></div>
+        <div class="progress-container"><div id="progressBarFill" class="progress-bar-fill"></div></div>
+      </div>
+    </div>
+    <div style="background:#fff;border-radius:var(--radius-lg);padding:16px;margin-top:20px;box-shadow:var(--shadow-soft)">
+      <h4 style="font-size:16px;font-weight:800;color:#831843;margin-bottom:12px">المخطط البياني (القرآن والحديث) 📈</h4>
+      <canvas id="injazChart" height="180"></canvas>
+    </div>
+  </div>
+
+  <div id="view-awsima" class="section-view">
+    <div class="view-title-block">
+      <h2 style="color:#5b21b6">أوسمتي 🏅</h2>
+      <p>الأوسمة الممنوحة لكِ من المعلمة</p>
+    </div>
+    <div class="badges-grid">
+      <div id="badge-1" class="badge-box"><div class="badge-icon-img">⏰</div><div class="badge-name">الحضور باكراً</div><span id="badge-1-status" style="font-size:12px;font-weight:800;margin-top:5px;display:block"></span></div>
+      <div id="badge-2" class="badge-box"><div class="badge-icon-img">📖</div><div class="badge-name">الحفظ المتقن</div><span id="badge-2-status" style="font-size:12px;font-weight:800;margin-top:5px;display:block"></span></div>
+      <div id="badge-3" class="badge-box"><div class="badge-icon-img">🌟</div><div class="badge-name">التفاعل المستمر</div><span id="badge-3-status" style="font-size:12px;font-weight:800;margin-top:5px;display:block"></span></div>
+    </div>
+  </div>
+
+  <div id="view-niqati" class="section-view">
+    <div class="view-title-block"><h2 style="color:#713f12">نقاطي وترتيبي ⭐</h2></div>
+    <div class="points-summary-card" id="pointsSummaryCard">
+      <div style="font-size:16px;font-weight:800;color:#854d0e">مجموع نقاطكِ</div>
+      <div id="studentPointsVal" class="points-val">0</div>
+    </div>
+    <div class="podium-container" id="podiumContainer"></div>
+    <div id="leaderboardMsg" class="leaderboard-msg" style="margin-top:15px;"></div>
+  </div>
+
+  <div id="view-tahaddiyat" class="section-view">
+    <div class="view-title-block"><h2 style="color:#1e40af">تحديات وفائدة 🎮</h2></div>
+    <div class="sub-game-card">
+      <h4 style="font-size:18px;font-weight:800;color:#1e3a8a;text-align:center">عجلة الفوائد 🎡</h4>
+      <div class="wheel-wrapper">
+        <div class="wheel-pointer">▼</div>
+        <canvas id="wheelCanvas" class="wheel-canvas" width="220" height="220"></canvas>
+      </div>
+      <button class="btn-login" style="background:#3b82f6;font-size:16px;padding:12px;width:100%" onclick="spinWheel()">أديري العجلة ✨</button>
+      <div id="wheelResultMsg" style="margin-top:12px;font-size:14px;font-weight:800;color:#1e40af;text-align:center"></div>
+    </div>
+    <div class="sub-game-card">
+      <h4 style="font-size:18px;font-weight:800;color:#1e3a8a">فك الشيفرة 🗝️</h4>
+      <div style="background:#eff6ff;padding:10px;border-radius:10px;margin:10px 0;font-size:13px;color:#1e40af">💡<strong>تلميح: </strong><span id="wordleHintText"></span></div>
+      <div class="wordle-color-legend">
+        <div class="legend-item"><div class="legend-box" style="background:#10b981"></div><span>صح ومكانه صح</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#f59e0b"></div><span>صح بس مكانه غلط</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#64748b"></div><span>الحرف غير موجود</span></div>
+      </div>
+      <div id="wordleGridContainer" class="wordle-grid-container"></div>
+      <div style="display:flex;gap:10px">
+        <input type="text" id="wordleInput" style="flex:1;padding:10px;border-radius:10px;border:2px solid #cbd5e1;text-align:center;font-weight:800;font-size:16px" placeholder="الكلمة">
+        <button onclick="checkWordle()" style="padding:10px 20px;background:#10b981;color:#fff;border:none;border-radius:10px;font-weight:800">تحقق</button>
+      </div>
+      <div id="wordleStatus" style="font-size:13px;font-weight:800;margin-top:10px"></div>
+    </div>
+    <div class="sub-game-card">
+      <h4 style="font-size:18px;font-weight:800;color:#1e3a8a">لغز اليوم 🧩</h4>
+      <p id="riddleQuestionText" style="font-size:14px;color:#334155;margin:10px 0"></p>
+      <div style="font-size:13px;color:#0284c7;margin-bottom:10px;font-weight:700" id="riddleHintText"></div>
+      <div style="display:flex;gap:10px">
+        <input type="text" id="riddleInput" style="flex:1;padding:10px;border-radius:10px;border:2px solid #cbd5e1;font-weight:800;font-size:15px" placeholder="الإجابة...">
+        <button onclick="checkRiddle()" style="padding:10px 20px;background:#3b82f6;color:#fff;border:none;border-radius:10px;font-weight:800">إدخال</button>
+      </div>
+      <div id="riddleStatus" style="font-size:13px;font-weight:800;margin-top:10px"></div>
+    </div>
+  </div>
+
+  <div id="view-avatar" class="section-view">
+    <div class="view-title-block">
+      <h2 style="color:#c2410c">تصميم شخصيتي 🌸</h2>
+      <p>صممي شخصيتك المميزة</p>
+    </div>
+    <div class="avatar-display-large" id="largeAvatarBox"></div>
+    <div class="avatar-option-group">
+      <label>لون الخلفية 🎨</label>
+      <div class="opt-buttons">
+        <button class="opt-btn" onclick='setAvatarBg("#E0F2FE")'>أزرق سماوي</button>
+        <button class="opt-btn" onclick='setAvatarBg("#FCE7F3")'>وردي لطيف</button>
+        <button class="opt-btn" onclick='setAvatarBg("#E9D5FF")'>لافندر 🪻</button>
+        <button class="opt-btn" onclick='setAvatarBg("#FEF08A")'>أصفر مشرق</button>
+        <button class="opt-btn" onclick='setAvatarBg("#DCFCE7")'>أخضر نعناعي</button>
+      </div>
+    </div>
+    <div class="avatar-option-group">
+      <label>الإضافات</label>
+      <div class="opt-buttons">
+        <button class="opt-btn" onclick='setAccessory("none")'>بدون</button>
+        <button class="opt-btn" onclick='setAccessory("flower")'>وردة</button>
+        <button class="opt-btn" onclick='setAccessory("butterfly")'>فراشة</button>
+        <button class="opt-btn" onclick='setAccessory("bow")'>عقدة/ربطة</button>
+        <button class="opt-btn" onclick='setAccessory("hat")'>قبعة أنيقة</button>
+      </div>
+    </div>
+    <div class="avatar-option-group">
+      <label>النظارات 👓</label>
+      <div class="opt-buttons">
+        <button class="opt-btn" onclick='setGlasses("none")'>بدون نظارة</button>
+        <button class="opt-btn" onclick='setGlasses("medical")'>نظارة طبية</button>
+        <button class="opt-btn" onclick='setGlasses("sun")'>نظارة شمسية</button>
+      </div>
+    </div>
+    <div class="avatar-option-group">
+      <label>اللباس</label>
+      <div class="opt-buttons">
+        <button class="opt-btn" onclick='setShirt("1")'>اللباس 1</button>
+        <button class="opt-btn" onclick='setShirt("2")'>اللباس 2</button>
+        <button class="opt-btn" onclick='setShirt("3")'>اللباس 3</button>
+        <button class="opt-btn" onclick='setShirt("4")'>اللباس 4</button>
+        <button class="opt-btn" onclick='setShirt("5")'>اللباس 5</button>
+      </div>
+    </div>
+    <button class="btn-login" style="background:#f97316;margin-top:10px;width:100%;border-radius:16px;padding:14px" onclick="saveAvatarAndReturn()">حفظ والعودة ✨</button>
+  </div>
+
+  <div id="logoutModal" class="custom-modal-overlay">
+    <div class="custom-modal">
+      <h3>تنبيه ⚠️</h3>
+      <p>هل تريدين تسجيل الخروج؟</p>
+      <div class="modal-btn-group">
+        <button class="modal-btn modal-btn-confirm" onclick="executeLogout()">نعم</button>
+        <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">لا</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwPD8f08aMoqtWudVedjoCftNOXamRvHlV-y0wAuZY1AZO6D6FAhJcT1jvNF8l1_8xTgw/exec"; 
+
+let studentsData = {};
+let currentStudentPass = null;
+let currentStudent = null;
+let chartInstance = null;
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playSound(type) {
+    if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    if (type === 'tasbeeh') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.015, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.12);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.12);
+    } else if (type === 'click') {
+        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+    } else if (type === 'success') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+    }
+}
+
+async function fetchStudentsData() {
+    try {
+        let res = await fetch(GOOGLE_SHEETS_URL + "?cache=" + new Date().getTime());
+        let data = await res.json();
+        if (data && Object.keys(data).length > 0) {
+            studentsData = {};
+            Object.keys(data).forEach(k => {
+                studentsData[String(k).trim()] = data[k];
+            });
+        }
+    } catch(e) { console.error(e); }
+}
+
+window.onload = function() {
+    fetchStudentsData();
+    initSnow();
+    const todayStr = new Date().toISOString().split('T')[0];
+    document.getElementById('todayDateLabel').innerText = "اليوم: " + todayStr;
+};
+
+function initSnow() {
+    const container = document.getElementById('snowContainer');
+    if (!container) return;
+    container.innerHTML = '';
+    for (let i = 0; i < 15; i++) {
+        const flake = document.createElement('div');
+        flake.className = 'snowflake';
+        flake.innerText = i % 2 === 0 ? '❄' : '🌨';
+        flake.style.left = Math.random() * 100 + '%';
+        flake.style.animationDuration = (Math.random() * 3 + 3) + 's';
+        container.appendChild(flake);
+    }
+}
+
+async function login() {
+    const pass = String(document.getElementById('studentPass').value).trim();
+    const err = document.getElementById('errorMsg');
+    const loadBox = document.getElementById('loadingBox');
+    
+    err.style.display = 'none';
+
+    if (!pass) return;
+
+    if (Object.keys(studentsData).length === 0) {
+        loadBox.style.display = 'flex';
+        await fetchStudentsData();
+        loadBox.style.display = 'none';
+    }
+
+    if (studentsData[pass]) {
+        playSound('success');
+        currentStudentPass = pass;
+        currentStudent = studentsData[pass];
+        
+        if (!currentStudent.avatar) {
+            currentStudent.avatar = { bgColor: '#E0F2FE', glasses: 'none', accessory: 'none', shirt: '1' };
+        }
+        
+        const todayStr = new Date().toISOString().split('T')[0];
+        const localSaved = localStorage.getItem('saved_yawmi_' + pass);
+        
+        if (localSaved) {
+            let parsed = JSON.parse(localSaved);
+            if (parsed.date === todayStr) {
+                currentStudent.yawmiData = parsed.data;
+                currentStudent.s1 = parsed.s1;
+                currentStudent.s2 = parsed.s2;
+                currentStudent.d1 = parsed.d1;
+                currentStudent.d2 = parsed.d2;
+                currentStudent.d3 = parsed.d3;
+                currentStudent.lastYawmiDate = todayStr;
+            } else {
+                localStorage.removeItem('saved_yawmi_' + pass);
+                currentStudent.s1 = 0;
+                currentStudent.s2 = 0;
+                currentStudent.d1 = 0;
+                currentStudent.d2 = 0;
+                currentStudent.d3 = 0;
+                currentStudent.yawmiData = { prayers: "0", sunan: "", witr: false, quranPages: 0, hadithPages: 0, study: "", birr: "" };
+            }
+        } else if (!currentStudent.lastYawmiDate || currentStudent.lastYawmiDate !== todayStr) {
+            currentStudent.s1 = 0;
+            currentStudent.s2 = 0;
+            currentStudent.d1 = 0;
+            currentStudent.d2 = 0;
+            currentStudent.d3 = 0;
+            currentStudent.yawmiData = { prayers: "0", sunan: "", witr: false, quranPages: 0, hadithPages: 0, study: "", birr: "" };
+        }
+        currentStudent.lastActiveDate = todayStr;
+
+        localStorage.setItem('ghars_student_pass', pass);
+
+        document.getElementById('barStudentName').innerText = currentStudent.name;
+        document.getElementById('homeWelcomeTitle').innerText = "أهلاً " + currentStudent.name;
+        document.getElementById('studentPointsVal').innerText = currentStudent.points || 0;
+
+        document.getElementById('cnt-s1').innerText = currentStudent.s1 || 0;
+        document.getElementById('cnt-s2').innerText = currentStudent.s2 || 0;
+        document.getElementById('cnt-d1').innerText = currentStudent.d1 || 0;
+        document.getElementById('cnt-d2').innerText = currentStudent.d2 || 0;
+        document.getElementById('cnt-d3').innerText = currentStudent.d3 || 0;
+
+        let qVal = Number(currentStudent.quran) || 0;
+        let hVal = Number(currentStudent.hadith) || 0;
+        document.getElementById('acc1').innerHTML = qVal > 0 ? (qVal + " صفحة 📜") : "لم يتم تسجيل حفظ جديد بعد";
+        document.getElementById('acc2').innerHTML = hVal > 0 ? (hVal + " صفحات 💬") : "لم يتم تسجيل حديث جديد بعد";
+
+        if (currentStudent.dustourAyah) {
+            document.getElementById('dustourAyahText').innerText = currentStudent.dustourAyah;
+        }
+        if (currentStudent.dustourExp) {
+            document.getElementById('dustourExpText').innerText = currentStudent.dustourExp;
+        }
+
+        if (currentStudent.messageTitle) {
+            document.getElementById('msgTitleBox').innerText = currentStudent.messageTitle;
+        }
+        if (currentStudent.messageBody) {
+            document.getElementById('msgContentBox').innerText = currentStudent.messageBody;
+            const lastMsgKey = 'read_msg_' + pass;
+            if (localStorage.getItem(lastMsgKey) !== currentStudent.messageBody) {
+                document.getElementById('mailBadge').style.display = 'flex';
+            }
+        }
+
+        checkTodayYawmiStatus();
+        updateLeaderboardUI();
+        updateBadgesUI();
+        renderAvatar();
+
+        document.getElementById('screenLogin').classList.add('hidden');
+        confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
+    } else {
+        err.style.display = 'block';
+    }
+}
+
+function confirmLogout() {
+    playSound('click');
+    document.getElementById('logoutModal').style.display = 'flex';
+}
+
+function closeLogoutModal() {
+    playSound('click');
+    document.getElementById('logoutModal').style.display = 'none';
+}
+
+function executeLogout() {
+    playSound('click');
+    document.getElementById('logoutModal').style.display = 'none';
+    localStorage.removeItem('ghars_student_pass');
+    currentStudentPass = null;
+    currentStudent = null;
+    document.getElementById('studentPass').value = '';
+    document.getElementById('screenLogin').classList.remove('hidden');
+    navToHome();
+}
+
+function checkTodayYawmiStatus() {
+    if (!currentStudent) return;
+    if (currentStudent.yawmiData) {
+        document.getElementById('yawmiPrayers').value = currentStudent.yawmiData.prayers || "0";
+        document.getElementById('yawmiSunan').value = currentStudent.yawmiData.sunan || "";
+        document.getElementById('yawmiWitrCheck').checked = currentStudent.yawmiData.witr === "نعم" || currentStudent.yawmiData.witr === true;
+        document.getElementById('yawmiQuranPages').value = currentStudent.yawmiData.quranPages || "";
+        document.getElementById('yawmiHadithPages').value = currentStudent.yawmiData.hadithPages || "";
+        document.getElementById('yawmiStudy').value = currentStudent.yawmiData.study || "";
+        if (currentStudent.yawmiData.birr) {
+            setBirr(currentStudent.yawmiData.birr, null);
+        }
+    }
+}
+
+function setBirr(val, btn) {
+    playSound('click');
+    document.getElementById('yawmiBirrVal').value = val;
+    document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+    if (btn) {
+        btn.classList.add('selected');
+    } else {
+        document.querySelectorAll('.emoji-btn').forEach(b => {
+            if (b.innerText === val) b.classList.add('selected');
+        });
+    }
+}
+
+function saveYawmiData() {
+    if (!currentStudent) return;
+    playSound('success');
+    const todayStr = new Date().toISOString().split('T')[0];
+    
+    currentStudent.lastYawmiDate = todayStr;
+    currentStudent.yawmiData = {
+        prayers: document.getElementById('yawmiPrayers').value,
+        sunan: document.getElementById('yawmiSunan').value,
+        witr: document.getElementById('yawmiWitrCheck').checked ? "نعم" : "لا",
+        quranPages: Number(document.getElementById('yawmiQuranPages').value) || 0,
+        hadithPages: Number(document.getElementById('yawmiHadithPages').value) || 0,
+        study: document.getElementById('yawmiStudy').value,
+        birr: document.getElementById('yawmiBirrVal').value
+    };
+
+    localStorage.setItem('saved_yawmi_' + currentStudentPass, JSON.stringify({
+        date: todayStr,
+        data: currentStudent.yawmiData,
+        s1: currentStudent.s1,
+        s2: currentStudent.s2,
+        d1: currentStudent.d1,
+        d2: currentStudent.d2,
+        d3: currentStudent.d3
+    }));
+
+    syncDataToServer();
+    confetti({ particleCount: 30, spread: 50 });
+    alert("تم حفظ برنامجك اليومي وتدوين الإنجاز بنجاح 🌟");
+}
+
+function updateLeaderboardUI() {
+    if (!currentStudent || !studentsData) return;
+    const container = document.getElementById('podiumContainer');
+    container.innerHTML = '';
+
+    const sortedStudents = Object.values(studentsData).sort((a, b) => (Number(b.points) || 0) - (Number(a.points) || 0));
+    
+    let activeCardElement = null;
+
+    sortedStudents.forEach((st, index) => {
+        const rank = index + 1;
+        const step = document.createElement('div');
+        step.className = `podium-step rank-${rank > 3 ? 3 : rank}`;
+        
+        const isMe = (st.name === currentStudent.name);
+        if (isMe) {
+            step.classList.add('active-student');
+        }
+        
+        let medal = rank === 1 ? '🏆' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : '⭐'));
+        let displayName = isMe ? st.name : "طالبة مجتهدة ✨";
+        
+        step.innerHTML = `
+            <span style="font-size:20px">${medal}</span>
+            <span style="font-size:11px;font-weight:800;color:${isMe ? '#065f46' : '#94a3b8'};margin-top:4px;text-align:center;overflow:hidden;text-overflow:ellipsis;width:100%">${displayName}</span>
+            <span style="font-size:10px;font-weight:700;color:${isMe ? '#059669' : '#cbd5e1'}">${isMe ? (st.points || 0) + ' ن' : '---'}</span>
+        `;
+        
+        container.appendChild(step);
+        if (isMe) activeCardElement = step;
+    });
+
+    if (activeCardElement) {
+        setTimeout(() => {
+            container.scrollTo({
+                left: activeCardElement.offsetLeft - container.offsetWidth / 2 + activeCardElement.offsetWidth / 2,
+                behavior: 'smooth'
+            });
+        }, 200);
+    }
+
+    const myRank = sortedStudents.findIndex(st => st.name === currentStudent.name) + 1;
+    const pointsCard = document.getElementById('pointsSummaryCard');
+    
+    if (myRank === 1) {
+        pointsCard.style.background = "linear-gradient(135deg, #FDE047, #CA8A04)";
+        pointsCard.style.color = "#fff";
+    } else if (myRank === 2) {
+        pointsCard.style.background = "linear-gradient(135deg, #E2E8F0, #64748B)";
+        pointsCard.style.color = "#fff";
+    } else if (myRank === 3) {
+        pointsCard.style.background = "linear-gradient(135deg, #FFEDD5, #F97316)";
+        pointsCard.style.color = "#7c2d12";
+    } else {
+        pointsCard.style.background = "linear-gradient(135deg, #FEF08A, #FDE047)";
+        pointsCard.style.color = "#713f12";
+    }
+
+    const msgBox = document.getElementById('leaderboardMsg');
+    const totalCount = sortedStudents.length;
+    if (myRank === 1) {
+        msgBox.innerText = `مبارك أنتِ في المركز الأول من أصل ${totalCount} طالبة.. زادكِ الله تألقاً ✨`;
+    } else {
+        msgBox.innerText = `أنتِ في المركز ${myRank} من أصل ${totalCount} طالبة، شدي الهمة للقمة 💪`;
+    }
+}
+
+function updateBadgesUI() {
+    if (!currentStudent) return;
+    const b = currentStudent.badges || { b1: false, b2: false, b3: false };
+    const setB = (id, active) => {
+        const box = document.getElementById('badge-' + id);
+        const status = document.getElementById('badge-' + id + '-status');
+        if (active === true || active === "نعم" || active === "true") {
+            box.className = 'badge-box lit';
+            status.innerText = 'مكتسب ✨';
+            status.style.color = '#10B981';
+        } else {
+            box.className = 'badge-box';
+            status.innerText = 'قريباً';
+            status.style.color = '#64748B';
+        }
+    };
+    setB(1, b.b1);
+    setB(2, b.b2);
+    setB(3, b.b3);
+}
+
+function openSection(secId) {
+    playSound('click');
+    document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
+    const target = document.getElementById('view-' + secId);
+    if (target) {
+        target.classList.add('active');
+        document.getElementById('backBtn').style.display = 'flex';
+    }
+    if (secId === 'injaz') {
+        initChart();
+        let quranAchieved = Number(currentStudent.quran) || 0;
+        let quranGoal = Number(currentStudent.monthlyGoal) || 30;
+        let percent = Math.min(100, Math.round((quranAchieved / quranGoal) * 100));
+        document.getElementById('progressBarFill').style.width = percent + '%';
+        document.getElementById('progressTextVal').innerText = percent + '%';
+    }
+    if (secId === 'niqati' || secId === 'awsima') {
+        if (currentStudent) fireConfetti();
+    }
+    if (secId === 'tahaddiyat') {
+        drawWheel();
+        initWordle();
+        if (currentStudent.riddleQuestion) {
+            document.getElementById('riddleQuestionText').innerText = currentStudent.riddleQuestion;
+        }
+        if (currentStudent.riddleHint) {
+            document.getElementById('riddleHintText').innerText = "💡 تلميح: " + currentStudent.riddleHint;
+        }
+    }
+    if (secId === 'avatar') {
+        renderAvatar();
+    }
+}
+
+function navToHome() {
+    playSound('click');
+    document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
+    document.getElementById('backBtn').style.display = 'none';
+    document.getElementById('mailboxDropdown').style.display = 'none';
+    renderAvatar();
+}
+
+function toggleMailbox() {
+    playSound('click');
+    const box = document.getElementById('mailboxDropdown');
+    box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+    if (currentStudent) {
+        localStorage.setItem('read_msg_' + currentStudentPass, currentStudent.messageBody);
+    }
+    document.getElementById('mailBadge').style.display = 'none';
+}
+
+function incDhikr(key, event) {
+    playSound('tasbeeh');
+    if (!currentStudent) return;
+    currentStudent[key] = (currentStudent[key] || 0) + 1;
+    document.getElementById('cnt-' + key).innerText = currentStudent[key];
+    
+    // تحديث الذاكرة المحلية فوراً عند زيادة العداد لتثبيته طوال اليوم
+    const todayStr = new Date().toISOString().split('T')[0];
+    localStorage.setItem('saved_yawmi_' + currentStudentPass, JSON.stringify({
+        date: todayStr,
+        data: currentStudent.yawmiData || {},
+        s1: currentStudent.s1,
+        s2: currentStudent.s2,
+        d1: currentStudent.d1,
+        d2: currentStudent.d2,
+        d3: currentStudent.d3
+    }));
+
+    syncDataToServer();
+
+    if (event) {
+        const spark = document.createElement('div');
+        spark.className = 'dhikr-pop-spark';
+        spark.innerText = '+1 ✨';
+        const row = document.getElementById('row-' + key);
+        if (row) {
+            row.appendChild(spark);
+            setTimeout(() => spark.remove(), 600);
+        }
+    }
+}
+
+function resetDhikr(key) {
+    playSound('click');
+    if (!currentStudent) return;
+    currentStudent[key] = 0;
+    document.getElementById('cnt-' + key).innerText = 0;
+    
+    const todayStr = new Date().toISOString().split('T')[0];
+    localStorage.setItem('saved_yawmi_' + currentStudentPass, JSON.stringify({
+        date: todayStr,
+        data: currentStudent.yawmiData || {},
+        s1: currentStudent.s1,
+        s2: currentStudent.s2,
+        d1: currentStudent.d1,
+        d2: currentStudent.d2,
+        d3: currentStudent.d3
+    }));
+
+    syncDataToServer();
+}
+
+function toggleDustourExp() {
+    playSound('click');
+    const expBox = document.getElementById('dustourExpText');
+    expBox.classList.toggle('show');
+}
+
+function toggleAccordion(id) {
+    playSound('click');
+    const content = document.getElementById(id);
+    const isOpen = content.style.display === 'block';
+    content.style.display = isOpen ? 'none' : 'block';
+}
+
+function initChart() {
+    if (chartInstance) chartInstance.destroy();
+    const ctx = document.getElementById('injazChart').getContext('2d');
+    let quranAchieved = Number(currentStudent.quran) || 0;
+    let hadithAchieved = Number(currentStudent.hadith) || 0;
+
+    chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['القرآن الكريم 📜', 'الحديث الشريف 💬'],
+            datasets: [
+                { 
+                    label: 'الإنجاز المعتمد', 
+                    data: [quranAchieved, hadithAchieved], 
+                    backgroundColor: ['#EC4899', '#3B82F6'], 
+                    borderRadius: 8 
+                }
+            ]
+        },
+        options: { 
+            responsive: true, 
+            plugins: { legend: { display: false } }, 
+            scales: { y: { beginAtZero: true } } 
+        }
+    });
+}
+
+const wheelColors = ['#F43F5E', '#10B981', '#F59E0B', '#6366F1'];
+let currentWheelAngle = 0;
+
+function drawWheel() {
+    const canvas = document.getElementById('wheelCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const sliceAngle = (2 * Math.PI) / 4;
+    ctx.clearRect(0, 0, 220, 220);
+    for (let i = 0; i < 4; i++) {
+        ctx.beginPath();
+        ctx.fillStyle = wheelColors[i];
+        ctx.moveTo(110, 110);
+        ctx.arc(110, 110, 110, i * sliceAngle, (i + 1) * sliceAngle);
+        ctx.fill();
+    }
+}
+
+function spinWheel() {
+    playSound('click');
+    const canvas = document.getElementById('wheelCanvas');
+    const randIndex = Math.floor(Math.random() * 4);
+    const targetDegree = 1800 + (randIndex * 90) + 45;
+    currentWheelAngle += targetDegree;
+    canvas.style.transform = `rotate(${currentWheelAngle}deg)`;
+
+    setTimeout(() => {
+        playSound('success');
+        const benefitsList = currentStudent?.wheelBenefits || [
+            "والكلمة الطيبة صدقة",
+            "بورك لأمتي في بكورها",
+            "الوالد أوسط أبواب الجنة",
+            "اغتنم خمساً قبل خمس"
+        ];
+        const res = benefitsList[randIndex] || "بارك الله في أورادكِ ✨";
+        document.getElementById('wheelResultMsg').innerText = "💡 فائدة العجلة: " + res;
+        fireConfetti();
+    }, 3500);
+}
+
+function initWordle() {
+    const wordInfo = currentStudent?.wordleGame || { word: "إحسان", hint: "خلق كريم" };
+    document.getElementById('wordleHintText').innerText = wordInfo.hint;
+    const container = document.getElementById('wordleGridContainer');
+    container.innerHTML = '';
+    const row = document.createElement('div');
+    row.className = 'wordle-row';
+    for (let i = 0; i < wordInfo.word.length; i++) {
+        const box = document.createElement('div');
+        box.className = 'wordle-box';
+        box.id = 'wbox-' + i;
+        row.appendChild(box);
+    }
+    container.appendChild(row);
+    document.getElementById('wordleStatus').innerText = '';
+}
+
+function checkWordle() {
+    const inp = document.getElementById('wordleInput').value.trim();
+    const wordInfo = currentStudent?.wordleGame || { word: "إحسان" };
+    const target = wordInfo.word;
+    const status = document.getElementById('wordleStatus');
+
+    if (inp.length !== target.length) {
+        status.style.color = '#EF4444';
+        status.innerText = `اكتبي كلمة من ${target.length} أحرف!`;
+        return;
+    }
+    playSound('click');
+    for (let i = 0; i < target.length; i++) {
+        const box = document.getElementById('wbox-' + i);
+        const char = inp[i];
+        box.innerText = char;
+        if (char === target[i]) box.className = 'wordle-box correct';
+        else if (target.includes(char)) box.className = 'wordle-box misplaced';
+        else box.className = 'wordle-box wrong';
+    }
+    if (inp === target) {
+        playSound('success');
+        status.style.color = '#10B981';
+        status.innerText = "أحسنتِ! إجابة فك الشيفرة صحيحة ✨";
+        fireConfetti();
+    } else {
+        status.style.color = '#F59E0B';
+        status.innerText = "تابعي التخمين بحسب دلالة الألوان.";
+    }
+}
+
+function checkRiddle() {
+    const ans = document.getElementById('riddleInput').value.trim();
+    const status = document.getElementById('riddleStatus');
+    const correctAns = currentStudent?.riddleAnswer || "";
+
+    if (ans === correctAns) {
+        playSound('success');
+        status.style.color = '#10B981';
+        status.innerText = "إجابة اللغز رائعة وصحيحة! ✨";
+        fireConfetti();
+    } else {
+        playSound('click');
+        status.style.color = '#EF4444';
+        status.innerText = "إجابة خاطئة، حاولي مجدداً!";
+    }
+}
+
+function setAvatarBg(color) { playSound('click'); if(currentStudent) { if(!currentStudent.avatar) currentStudent.avatar = {}; currentStudent.avatar.bgColor = color; } renderAvatar(); }
+function setGlasses(type) { playSound('click'); if(currentStudent) { if(!currentStudent.avatar) currentStudent.avatar = {}; currentStudent.avatar.glasses = type; } renderAvatar(); }
+function setAccessory(acc) { playSound('click'); if(currentStudent) { if(!currentStudent.avatar) currentStudent.avatar = {}; currentStudent.avatar.accessory = acc; } renderAvatar(); }
+function setShirt(style) { playSound('click'); if(currentStudent) { if(!currentStudent.avatar) currentStudent.avatar = {}; currentStudent.avatar.shirt = style; } renderAvatar(); }
+
+function renderAvatar() {
+    if (!currentStudent) return;
+    if (!currentStudent.avatar) {
+        currentStudent.avatar = { bgColor: '#E0F2FE', glasses: 'none', accessory: 'none', shirt: '1' };
+    }
+    const conf = currentStudent.avatar;
+    let glassesSvg = '';
+    if (conf.glasses === 'medical') {
+        glassesSvg = `<circle cx="38" cy="48" r="8" stroke="#1E293B" stroke-width="2" fill="none"/><circle cx="62" cy="48" r="8" stroke="#1E293B" stroke-width="2" fill="none"/><line x1="46" y1="48" x2="54" y2="48" stroke="#1E293B" stroke-width="2"/>`;
+    } else if (conf.glasses === 'sun') {
+        glassesSvg = `<circle cx="38" cy="48" r="8" fill="#1E293B"/><circle cx="62" cy="48" r="8" fill="#1E293B"/><line x1="46" y1="48" x2="54" y2="48" stroke="#1E293B" stroke-width="2"/>`;
+    }
+    let accSvg = '';
+    if (conf.accessory === 'flower') {
+        accSvg = `<g transform="translate(64, 32)"><circle cx="0" cy="0" r="4" fill="#EC4899"/><circle cx="-4" cy="0" r="3" fill="#F472B6"/><circle cx="4" cy="0" r="3" fill="#F472B6"/><circle cx="0" cy="-4" r="3" fill="#F472B6"/><circle cx="0" cy="4" r="3" fill="#F472B6"/><circle cx="0" cy="0" r="1.5" fill="#FDE047"/></g>`;
+    } else if (conf.accessory === 'butterfly') {
+        accSvg = `<g transform="translate(64, 32)"><ellipse cx="-3" cy="-2" rx="3" ry="5" fill="#8B5CF6"/><ellipse cx="3" cy="-2" rx="3" ry="5" fill="#8B5CF6"/><ellipse cx="-2" cy="2" rx="2" ry="3" fill="#A78BFA"/><ellipse cx="2" cy="2" rx="2" ry="3" fill="#A78BFA"/></g>`;
+    } else if (conf.accessory === 'bow') {
+        accSvg = `<g transform="translate(36, 32)"><polygon points="0,0 -6,-4 -6,4" fill="#EF4444"/><polygon points="0,0 6,-4 6,4" fill="#EF4444"/><circle cx="0" cy="0" r="2.5" fill="#F87171"/></g>`;
+    } else if (conf.accessory === 'hat') {
+        accSvg = `<g transform="translate(50, 31)"><path d="M -18 -1 Q 0 -12 18 -1 Z" fill="#F59E0B"/><path d="M -24 3 Q 0 -1 24 3 Q 0 6 -24 3 Z" fill="#D97706"/><rect x="-16" y="-2" width="32" height="3" fill="#EF4444" rx="1"/></g>`;
+    }
+
+    let shirtSvg = '';
+    if (conf.shirt === '1') {
+        shirtSvg = `<path d="M 22 75 L 78 75 L 85 100 L 15 100 Z" fill="#EC4899"/><line x1="50" y1="75" x2="50" y2="100" stroke="white" stroke-width="2"/>`;
+    } else if (conf.shirt === '2') {
+        shirtSvg = `<path d="M 22 75 L 78 75 L 85 100 L 15 100 Z" fill="#8B5CF6"/><polygon points="40,75 50,86 60,75" fill="#DDD6FE"/>`;
+    } else if (conf.shirt === '3') {
+        shirtSvg = `<path d="M 22 75 L 78 75 L 85 100 L 15 100 Z" fill="#0D9488"/><path d="M 30 75 Q 50 85 70 75" stroke="#CCFBF1" stroke-width="3" fill="none"/>`;
+    } else if (conf.shirt === '4') {
+        shirtSvg = `<path d="M 20 72 L 80 72 L 88 100 L 12 100 Z" fill="#F43F5E"/><circle cx="30" cy="80" r="3" fill="white"/><circle cx="50" cy="82" r="3" fill="white"/><circle cx="70" cy="80" r="3" fill="white"/><circle cx="40" cy="92" r="3" fill="white"/><circle cx="60" cy="92" r="3" fill="white"/>`;
+    } else if (conf.shirt === '5') {
+        shirtSvg = `<path d="M 18 70 L 82 70 L 90 100 L 10 100 Z" fill="#1E293B"/><path d="M 50 70 L 50 100" stroke="#38BDF8" stroke-width="3"/>`;
+    }
+
+    const svgCode = `
+        <svg class="hijabi-avatar-svg" viewBox="0 0 100 100" style="background:${conf.bgColor};">
+            ${shirtSvg}
+            <ellipse cx="50" cy="48" rx="15" ry="17" fill="#FFEDD5"/>
+            <path d="M 32 45 C 32 24, 68 24, 68 45 C 68 62, 76 75, 78 80 L 22 80 C 24 75, 32 62, 32 45 Z" fill="#FFFFFF" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))"/>
+            <ellipse cx="50" cy="46" rx="13" ry="14" fill="#FFEDD5"/>
+            ${accSvg}
+            ${glassesSvg}
+        </svg>
+    `;
+    const previewBox = document.getElementById('avatarPreviewContainer');
+    if (previewBox) previewBox.innerHTML = svgCode;
+    const lgBox = document.getElementById('largeAvatarBox');
+    if (lgBox) lgBox.innerHTML = svgCode;
+}
+
+function saveAvatarAndReturn() {
+    playSound('success');
+    syncDataToServer();
+    navToHome();
+}
+
+function fireConfetti() {
+    confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
+}
+
+function syncDataToServer() {
+    if (!currentStudentPass || !currentStudent) return;
+    let totalDhikrSum = (currentStudent.s1 || 0) + (currentStudent.s2 || 0) + (currentStudent.d1 || 0) + (currentStudent.d2 || 0) + (currentStudent.d3 || 0);
+    
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    let payload = {
+        pass: currentStudentPass,
+        data: {
+            ...currentStudent,
+            totalDhikr: totalDhikrSum,
+            clientDate: todayStr
+        }
+    };
+
+    fetch(GOOGLE_SHEETS_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    }).catch(e => console.error("Sync error:", e));
+}
+</script>
+</body>
+</html>
