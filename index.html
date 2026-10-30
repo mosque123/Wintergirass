@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<title>تطبيق غرس الشتاء - مسجد القعقاع</title>
+<link rel="icon" type="image/png" href="https://img.icons8.com/color/96/ mosque.png">
+<link rel="apple-touch-icon" href="https://img.icons8.com/color/192/ mosque.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<style>
+:root{
+  --font-family:'Cairo',sans-serif;
+  --bg-login:linear-gradient(135deg, #1E3A8A 0%, #0284C7 50%, #0F172A 100%);
+  --bg-home:linear-gradient(180deg, #F0F9FF 0%, #E0F2FE 100%);
+  --theme-awrad:#F0FDF4;
+  --theme-injaz:#FDF2F8;
+  --theme-awsima:#F5F3FF;
+  --theme-niqati:#FEFCE8;
+  --theme-tahaddiyat:#EFF6FF;
+  --theme-avatar:#FFF7ED;
+  --theme-yawmi:#ECFDF5;
+  --theme-dustour:#FFFBEB;
+  --text-dark:#1E293B;
+  --text-sub:#64748B;
+  --shadow-soft:0 12px 30px rgba(0, 0, 0, 0.08);
+  --radius-xl:28px;
+  --radius-lg:20px;
+  --radius-md:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:var(--font-family);-webkit-tap-highlight-color:transparent;user-select:none}
+body{background-color:#0f172a;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;padding:10px;overflow:hidden}
+.phone-frame{width:100%;max-width:460px;height:92vh;max-height:920px;background:var(--bg-home);position:relative;overflow:hidden;display:flex;flex-direction:column;border-radius:36px;box-shadow:0 25px 60px rgba(0,0,0,.5);border:4px solid #334155}
+.screen-login{position:absolute;inset:0;background:var(--bg-login);z-index:1000;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:30px 20px;text-align:center;transition:transform .5s cubic-bezier(.4,0,.2,1);overflow:hidden}
+.screen-login.hidden{transform:translateY(-100%)}
+#snowContainer{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+#screenLogin > :not(#snowContainer){position:relative;z-index:1}
+.snowflake{position:absolute;top:-30px;color:#e0f2fe;font-size:24px;opacity:.85;pointer-events:none;animation:fall linear infinite;will-change:transform}
+@keyframes fall{to{transform:translateY(1000px) rotate(360deg)}}
+.login-icon-mosque{font-size:70px;color:#fff;margin-bottom:15px;filter:drop-shadow(0 10px 20px rgba(255, 255, 255, .3))}
+.app-title{font-size:38px;font-weight:900;color:#fff;margin-bottom:5px}
+.app-subtitle{font-size:16px;font-weight:700;color:#bae6fd;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);padding:6px 20px;border-radius:20px;margin-bottom:25px;border:1px solid rgba(255,255,255,.2)}
+.pass-input{width:85%;padding:14px;border-radius:var(--radius-lg);border:3px solid #38bdf8;background:rgba(255,255,255,.95);font-size:20px;text-align:center;outline:0;margin-bottom:15px;color:#0f172a;box-shadow:0 10px 20px rgba(0,0,0,.2)}
+.btn-login{width:85%;padding:16px;border-radius:var(--radius-lg);border:none;background:linear-gradient(135deg,#38bdf8,#0284c7);color:#fff;font-size:20px;font-weight:800;cursor:pointer;box-shadow:0 10px 25px rgba(56,189,248,.4);transition:transform .1s}
+.btn-login:active{transform:scale(.96)}
+.error-msg{color:#fca5a5;font-size:15px;font-weight:700;margin-top:15px;display:none}
+.loading-box{color:#e0f2fe;font-size:15px;font-weight:700;margin-top:15px;display:none;align-items:center;gap:10px;justify-content:center}
+.spinner{width:22px;height:22px;border:3px solid rgba(255,255,255,0.3);border-top:3px solid #38bdf8;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+
+.top-app-bar{height:75px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid rgba(0,0,0,.06);z-index:500;flex-shrink:0}
+.bar-student-name{font-size:19px;font-weight:800;color:var(--text-dark)}
+.bar-week-tag{font-size:13px;font-weight:700;color:var(--text-sub)}
+.bar-left-actions{display:flex;align-items:center;gap:12px}
+.action-btn-icon{font-size:20px;color:#475569;cursor:pointer;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f1f5f9;position:relative}
+.mail-badge{position:absolute;top:-2px;right:-2px;background:#ef4444;color:#fff;font-size:11px;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.mailbox-dropdown{position:absolute;top:80px;left:15px;right:15px;background:#fff;border-radius:var(--radius-lg);box-shadow:0 20px 40px rgba(0,0,0,.2);padding:20px;z-index:600;display:none;border:1px solid #e2e8f0}
+.msg-item{background:#f8fafc;border-radius:var(--radius-md);padding:14px;margin-top:10px;border-right:5px solid #0284c7}
+.screen-main-home{flex:1;padding:20px 16px;display:flex;flex-direction:column;overflow-y:auto;gap:20px}
+.welcome-header-card{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);padding:16px 20px;border-radius:var(--radius-xl);border:1px solid rgba(255,255,255,.9);box-shadow:var(--shadow-soft)}
+.welcome-text h3{font-size:22px;font-weight:900;color:var(--text-dark)}
+.welcome-text p{font-size:14px;font-weight:700;color:var(--text-sub)}
+.avatar-preview-btn{width:70px;height:70px;border-radius:50%;background:#e0f2fe;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 15px rgba(0,0,0,.1);border:3px solid #fff;position:relative;overflow:hidden;flex-shrink:0}
+.floating-icons-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.floating-icon-card{display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,.7);padding:18px 10px;border-radius:var(--radius-xl);box-shadow:var(--shadow-soft);border:1px solid #fff;transition:transform 0.15s ease}
+.floating-icon-card:active{transform:scale(0.96)}
+.floating-icon-svg{width:70px;height:70px;display:flex;align-items:center;justify-content:center;font-size:36px;border-radius:50%;margin-bottom:10px;box-shadow:0 10px 20px rgba(0,0,0,.08)}
+.floating-icon-title{font-size:16px;font-weight:800;color:var(--text-dark);text-align:center}
+.section-view{position:absolute;inset:75px 0 0 0;z-index:400;padding:20px 16px;overflow-y:auto;display:none}
+.section-view.active{display:block;animation:slideInView .3s ease forwards}
+@keyframes slideInView{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+#view-awrad{background:var(--theme-awrad)}
+#view-injaz{background:var(--theme-injaz)}
+#view-awsima{background:var(--theme-awsima)}
+#view-niqati{background:var(--theme-niqati)}
+#view-tahaddiyat{background:var(--theme-tahaddiyat)}
+#view-avatar{background:var(--theme-avatar)}
+#view-yawmi{background:var(--theme-yawmi)}
+#view-dustour{background:var(--theme-dustour)}
+.view-title-block{margin-bottom:20px}
+.view-title-block h2{font-size:26px;font-weight:900}
+.view-title-block p{font-size:14px;color:var(--text-sub)}
+.dhikr-card{background:#fff;border-radius:var(--radius-lg);padding:18px;margin-bottom:15px;box-shadow:var(--shadow-soft);border:1px solid #dcfce7}
+.dhikr-text{font-size:19px;font-weight:800;color:#166534;margin-bottom:8px}
+.dhikr-hadith{font-size:13px;color:#374151;line-height:1.5;background:#f0fdf4;padding:12px;border-radius:var(--radius-md);margin-bottom:15px}
+.dhikr-counter-row{display:flex;align-items:center;justify-content:space-between;background:#f0fdf4;padding:10px 16px;border-radius:var(--radius-md);border:1px solid #bbf7d0;position:relative}
+.dhikr-val-text{font-size:28px;font-weight:900;color:#15803d}
+.dhikr-btn-group{display:flex;align-items:center;gap:12px}
+.reset-circle-btn{width:42px;height:42px;border-radius:50%;background:#fee2e2;color:#ef4444;border:1px solid #fca5a5;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.reset-circle-btn:active{transform:scale(.88);background:#fca5a5}
+.plus-circle-btn{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;font-size:28px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 15px rgba(16,185,129,.3);transition:transform 0.1s}
+.plus-circle-btn:active{transform:scale(0.9)}
+@keyframes sparkFloatUp{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-40px) scale(1.4);}}
+.dhikr-pop-spark{position:absolute;left:20px;color:#10b981;font-weight:900;font-size:20px;pointer-events:none;animation:sparkFloatUp 0.6s ease-out forwards}
+.form-card{background:#fff;border-radius:var(--radius-lg);padding:18px;margin-bottom:15px;box-shadow:var(--shadow-soft);border:1px solid #a7f3d0}
+.form-card h4{font-size:17px;font-weight:800;color:#065f46;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:14px;font-weight:800;color:#374151;margin-bottom:6px}
+.form-control{width:100%;padding:12px;border-radius:var(--radius-md);border:2px solid #cbd5e1;background:#f8fafc;font-size:15px;font-weight:700;outline:none;color:#0f172a}
+.form-control:focus{border-color:#10b981;background:#fff}
+.checkbox-row{display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:800;font-size:16px;color:#065f46;margin-top:5px}
+.checkbox-row input{width:22px;height:22px;accent-color:#10b981;cursor:pointer}
+.emoji-row{display:flex;justify-content:space-between;gap:8px;margin-top:6px}
+.emoji-btn{flex:1;font-size:24px;padding:8px;background:#f1f5f9;border:2px solid #e2e8f0;border-radius:12px;cursor:pointer;text-align:center;transition:all 0.2s}
+.emoji-btn.selected{background:#d1fae5;border-color:#10b981;transform:scale(1.08);box-shadow:0 4px 10px rgba(16,185,129,0.2)}
+.ayah-box{background:#fff;border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow-soft);border:2px solid #fde68a;text-align:center}
+.ayah-text{font-family:'Amiri', 'Cairo', serif;font-size:24px;font-weight:700;color:#78350f;line-height:2.2;margin-bottom:15px}
+.ayah-exp-btn{background:#f59e0b;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(245,158,11,0.3);transition:transform 0.1s}
+.ayah-exp-btn:active{transform:scale(0.95)}
+.ayah-explanation{background:#fffbeb;padding:15px;border-radius:var(--radius-md);font-size:15px;color:#92400e;text-align:right;line-height:1.6;border-right:4px solid #f59e0b;margin-top:15px;max-height:0;overflow:hidden;opacity:0;transition:all 0.4s ease}
+.ayah-explanation.show{max-height:200px;opacity:1;margin-top:15px;padding:15px}
+
+.badges-grid{display:grid;grid-template-columns:repeat(1,1fr);gap:15px}
+.badge-box{background:#fff;border-radius:var(--radius-lg);padding:18px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-soft);border:2px solid #e9d5ff;transition:all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);cursor:pointer}
+.badge-box:hover, .badge-box.has-badge{transform:scale(1.02) rotate(-1deg);box-shadow:0 12px 28px rgba(139,92,246,0.2)}
+.badge-box.has-badge{border-color:#8b5cf6;background:linear-gradient(135deg,#f5f3ff,#ede9fe)}
+.badge-info-flex{display:flex;align-items:center;gap:15px}
+.badge-icon-img{font-size:42px;transition:transform 0.3s ease}
+.badge-box.has-badge:hover .badge-icon-img{transform:scale(1.2) rotate(8deg)}
+.badge-name{font-size:18px;font-weight:800;color:#4c1d95}
+.badge-count-badge{background:#8b5cf6;color:#fff;font-size:16px;font-weight:900;padding:6px 16px;border-radius:20px;box-shadow:0 4px 12px rgba(139,92,246,0.3)}
+
+.ranking-section-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid #fef08a;
+}
+.ranking-section-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: #713f12;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.horizontal-rank-slider {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 8px 4px 14px 4px;
+  scroll-behavior: smooth;
+}
+.horizontal-rank-slider::-webkit-scrollbar {
+  height: 6px;
+}
+.horizontal-rank-slider::-webkit-scrollbar-thumb {
+  background: #fde047;
+  border-radius: 10px;
+}
+.rank-card-item {
+  flex: 0 0 130px;
+  background: linear-gradient(145deg, #ffffff, #fefce8);
+  border: 2px solid #fde047;
+  border-radius: 18px;
+  padding: 14px 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(254, 240, 138, 0.4);
+  transition: transform 0.2s ease;
+}
+.rank-card-item.is-me {
+  background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
+  border: 2px solid #ca8a04;
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(202, 138, 4, 0.35);
+}
+.rank-card-badge {
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+.rank-card-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #713f12;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+.rank-card-val {
+  font-size: 14px;
+  font-weight: 900;
+  color: #854d0e;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.floating-goal-banner {
+  background: linear-gradient(135deg, #fce7f3 0%, #fae8ff 50%, #fef3c7 100%);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 18px;
+  box-shadow: 0 15px 35px rgba(219, 39, 119, 0.15);
+  border: 2px solid rgba(236, 72, 153, 0.3);
+}
+.floating-goal-icon {
+  font-size: 45px;
+  display: inline-block;
+  margin-bottom: 8px;
+  animation: floatGoalIcon 2s infinite ease-in-out;
+}
+@keyframes floatGoalIcon {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(1.12); }
+}
+.floating-goal-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #9d174d;
+  margin-bottom: 12px;
+}
+.goals-static-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.goal-static-card {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 10px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #831843;
+}
+.injaz-box-rounded {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid #fbcfe8;
+}
+.injaz-box-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #831843;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.progress-container{margin-top:8px;background:#fce7f3;border-radius:20px;height:22px;overflow:hidden;position:relative;box-shadow:inset 0 2px 4px rgba(0,0,0,.05)}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,#ec4899,#db2777);width:0%;transition:width 1.5s cubic-bezier(.22,1,.36,1);border-radius:20px}
+
+.sub-game-card{background:#fff;border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;box-shadow:var(--shadow-soft)}
+.wheel-wrapper{position:relative;width:220px;height:220px;margin:15px auto}
+.wheel-canvas{width:100%;height:100%;border-radius:50%;transition:transform 3.5s cubic-bezier(.15,.99,.15,.99)}
+.wheel-pointer{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:26px;color:#ef4444;z-index:10}
+.wordle-grid-container{display:flex;flex-direction:column;gap:8px;margin:15px 0;align-items:center}
+.wordle-row{display:flex;gap:6px;direction:rtl}
+.wordle-box{width:45px;height:50px;border:2px solid #cbd5e1;border-radius:10px;font-size:22px;font-weight:800;text-align:center;line-height:48px}
+.wordle-box.correct{background:#10b981;color:#fff;border-color:#10b981}
+.wordle-box.misplaced{background:#f59e0b;color:#fff;border-color:#f59e0b}
+.wordle-box.wrong{background:#64748b;color:#fff;border-color:#64748b}
+.wordle-color-legend{display:flex;justify-content:space-around;align-items:center;background:#f8fafc;padding:10px;border-radius:12px;margin-bottom:12px;border:1px dashed #cbd5e1}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:#334155}
+.legend-box{width:16px;height:16px;border-radius:4px}
+.avatar-display-large{width:180px;height:180px;border-radius:50%;margin:0 auto 20px;box-shadow:0 12px 25px rgba(0,0,0,.12);border:5px solid #fff;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.avatar-option-group{background:#fff;border-radius:var(--radius-lg);padding:15px;margin-bottom:14px;box-shadow:var(--shadow-soft)}
+.avatar-option-group label{font-size:15px;font-weight:800;color:var(--text-sub);display:block;margin-bottom:10px}
+.opt-buttons{display:flex;gap:8px;overflow-x:auto;padding-bottom:5px}
+.opt-btn{padding:8px 16px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap}
+.hijabi-avatar-svg{width:100%;height:100%}
+.custom-modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.6);z-index:2000;display:none;justify-content:center;align-items:center;padding:20px}
+.custom-modal{background:#fff;border-radius:var(--radius-xl);padding:25px;width:100%;max-width:320px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,0.3)}
+.custom-modal h3{font-size:20px;font-weight:900;color:var(--text-dark);margin-bottom:10px}
+.custom-modal p{font-size:15px;color:var(--text-sub);margin-bottom:20px;font-weight:700}
+.modal-btn-group{display:flex;gap:10px}
+.modal-btn{flex:1;padding:12px;border-radius:var(--radius-md);border:none;font-size:16px;font-weight:800;cursor:pointer}
+.modal-btn-confirm{background:#ef4444;color:#fff}
+.modal-btn-cancel{background:#f1f5f9;color:#475569}
+</style>
+</head>
+<body>
+<div class="phone-frame" id="phoneFrame">
+  
+  <div id="screenLogin" class="screen-login">
+    <div id="snowContainer"></div>
+    <div class="login-icon-mosque">🕌</div>
+    <h1 class="app-title">غرس الشتاء</h1>
+    <div class="app-subtitle">مسجد القعقاع - شتاء 1448هـ</div>
+    <input type="text" id="studentNameInput" class="pass-input" placeholder="اكتبي اسمكِ هنا 🌸" style="font-size:18px; font-weight:800;">
+    <input type="password" id="studentPass" class="pass-input" placeholder="كلمة السر (••••)" maxlength="6">
+    <button class="btn-login" onclick="login()">تسجيل الدخول ✨</button>
+    <div id="errorMsg" class="error-msg">الاسم أو رمز السر غير صحيح، حاولي مجدداً</div>
+    <div id="loadingBox" class="loading-box"><div class="spinner"></div>جارٍ التحقق من البيانات .. ⏳</div>
+  </div>
+
+  <div class="top-app-bar">
+    <div style="display:flex;flex-direction:column">
+      <span id="barStudentName" class="bar-student-name">أهلاً بكِ</span>
+      <span id="barWeekTag" class="bar-week-tag">مسجد القعقاع</span>
+    </div>
+    <div class="bar-left-actions">
+      <div style="position:relative" onclick="toggleMailbox()">
+        <div class="action-btn-icon"><i class="fa-solid fa-envelope"></i></div>
+        <div id="mailBadge" class="mail-badge" style="display:none">1</div>
+      </div>
+      <div class="action-btn-icon" title="تسجيل الخروج" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket" style="color:#ef4444"></i></div>
+      <div id="backBtn" class="action-btn-icon" style="display:none" onclick="navToHome()"><i class="fa-solid fa-arrow-left"></i></div>
+    </div>
+    
+    <div id="mailboxDropdown" class="mailbox-dropdown">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <h4 style="font-size:18px;font-weight:800">صندوق الرسائل 💌</h4>
+        <i class="fa-solid fa-xmark" style="cursor:pointer" onclick="toggleMailbox()"></i>
+      </div>
+      <div id="messagesList">
+        <div class="msg-item">
+          <div style="font-size:15px;font-weight:800;color:#0f172a" id="msgTitleBox">رسالة من المعلمة 🌸</div>
+          <div style="font-size:13px;color:#475569;margin-top:4px" id="msgContentBox">أهلاً بكِ .</div>
+          
+          <!-- مستطيل الرد الخاص بالطالبة تحت الرسالة -->
+          <div style="margin-top:12px; border-top:1px dashed #cbd5e1; paddingTop:10px;">
+            <textarea id="studentReplyInput" class="form-control" style="font-size:13px; height:60px; resize:none; border-radius:14px; margin-bottom:8px;" placeholder="أضفي ردكِ على رسالة المعلمة هنا..."></textarea>
+            <button onclick="sendStudentReply()" style="background:#0284c7; color:#fff; border:none; padding:8px 16px; border-radius:20px; font-size:13px; font-weight:800; cursor:pointer; width:100%;">أضف رد 💌</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="screenHome" class="screen-main-home">
+    <div class="welcome-header-card">
+      <div class="welcome-text">
+        <h3 id="homeWelcomeTitle">أهلاً بكِ</h3>
+        <p>مستعدة لإنجاز اليوم؟ 🌱</p>
+      </div>
+      <div class="avatar-preview-btn" onclick='openSection("avatar")'>
+        <div id="avatarPreviewContainer" style="width:100%;height:100%"></div>
+      </div>
+    </div>
+
+    <div class="floating-icons-grid">
+      <div class="floating-icon-card" onclick='openSection("yawmi")'>
+        <div class="floating-icon-svg" style="background:#a7f3d0;color:#065f46">📋</div>
+        <div class="floating-icon-title">برنامجي</div>
+      </div>
+      <div class="floating-icon-card" onclick='openSection("awrad")'>
+        <div class="floating-icon-svg" style="background:#dcfce7;color:#166534">🍃</div>
+        <div class="floating-icon-title">أوراد وأذكار</div>
+      </div>
+      <div class="floating-icon-card" onclick='openSection("dustour")'>
+        <div class="floating-icon-svg" style="background:#fef3c7;color:#b45309">📖</div>
+        <div class="floating-icon-title">دستوري</div>
+      </div>
+      <div class="floating-icon-card" onclick='openSection("injaz")'>
+        <div class="floating-icon-svg" style="background:#fce7f3;color:#9d174d">📊</div>
+        <div class="floating-icon-title">إنجازي</div>
+      </div>
+      <div class="floating-icon-card" onclick='openSection("awsima")'>
+        <div class="floating-icon-svg" style="background:#ede9fe;color:#5b21b6">🏅</div>
+        <div class="floating-icon-title">أوسمتي</div>
+      </div>
+      <div class="floating-icon-card" onclick='openSection("niqati")'>
+        <div class="floating-icon-svg" style="background:#fef08a;color:#854d0e">⭐</div>
+        <div class="floating-icon-title">ترتيبي</div>
+      </div>
+      <div class="floating-icon-card" style="grid-column:span 2" onclick='openSection("tahaddiyat")'>
+        <div class="floating-icon-svg" style="background:#dbeafe;color:#1e40af;width:80px;height:80px">🎮</div>
+        <div class="floating-icon-title">تحديات وفائدة</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-yawmi" class="section-view">
+    <div class="view-title-block">
+      <h2 style="color:#065f46">برنامجي 📋</h2>
+      <p id="todayDateLabel">اليوم:</p>
+    </div>
+    <div class="form-card">
+      <h4>🕌 الصلوات الخمس</h4>
+      <div class="form-group">
+        <label>صلّيت:</label>
+        <select id="yawmiPrayers" class="form-control">
+          <option value="حافظت ع فرائضي ولله الحمد👍🏻">حافظت ع فرائضي ولله الحمد👍🏻</option>
+          <option value="فاتتني أحد الصلوات 😭">فاتتني أحد الصلوات 😭</option>
+          <option value="عذر">عذر</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-card">
+      <h4>☀️ السنن</h4>
+      <div class="form-group">
+        <label>السنن الرواتب:</label>
+        <input type="number" id="yawmiSunan" class="form-control" min="0" max="12" placeholder="عدد ركعات السنة">
+      </div>
+      <div class="form-group">
+        <label>صلاة الوتر:</label>
+        <div class="checkbox-row">
+          <input type="checkbox" id="yawmiWitrCheck">
+          <span>صلّيت الوتر اليوم ✨</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-card">
+      <h4>📜 أمضيتُ مع القرآن</h4>
+      <div class="form-group">
+        <label>كم ساعة أمضيتِ مع القرآن اليوم؟</label>
+        <input type="number" id="yawmiQuranHours" class="form-control" min="0" step="0.5" placeholder="مثلاً: 2">
+      </div>
+    </div>
+    <div class="form-card">
+      <h4>📚 دراستي اليومية</h4>
+      <div class="form-group">
+        <label>كم ساعة درستِ اليوم؟</label>
+        <input type="number" id="yawmiStudyHours" class="form-control" min="0" step="0.5" placeholder="مثلاً: 3">
+      </div>
+    </div>
+    <div class="form-card">
+      <h4>💖 بر الوالدين</h4>
+      <div class="form-group">
+        <label>كيف كان بركِ لوالديكِ اليوم؟</label>
+        <div class="emoji-row">
+          <button type="button" class="emoji-btn" onclick="setBirr('☺️', this)">☺️</button>
+          <button type="button" class="emoji-btn" onclick="setBirr('😟', this)">😟</button>
+        </div>
+        <input type="hidden" id="yawmiBirrVal" value="">
+      </div>
+    </div>
+    <button class="btn-login" style="background:#059669;width:100%;border-radius:16px;padding:14px;margin-bottom:20px" onclick="saveYawmiData()">حفظ برنامجي 🌟</button>
+  </div>
+
+  <div id="view-awrad" class="section-view">
+    <div class="view-title-block">
+      <h2 style="color:#166534">أوراد وأذكار 🍃</h2>
+      <p>{ألا بذكر الله تطمئن القلوب}</p>
+    </div>
+    <div class="dhikr-card">
+      <div class="dhikr-text">أذكار الصباح ☀️</div>
+      <div class="dhikr-hadith">{وَاذْكُرْ رَبَّكَ فِي نَفْسِكَ تَضَرُّعًا وَخِيفَةً وَدُونَ الْجَهْرِ مِنَ الْقَوْلِ بِالْغُدُوِّ وَالآصَالِ}</div>
+      <div class="dhikr-counter-row" id="row-s1">
+        <span class="dhikr-val-text" id="cnt-s1">0</span>
+        <div class="dhikr-btn-group">
+          <button class="reset-circle-btn" onclick='resetDhikr("s1")'><i class="fa-solid fa-rotate-right"></i></button>
+          <button class="plus-circle-btn" onclick='incDhikr("s1", event)'>+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dhikr-card">
+      <div class="dhikr-text">أذكار المساء 🌙</div>
+      <div class="dhikr-hadith">{وَاذْكُرْ رَبَّكَ فِي نَفْسِكَ تَضَرُّعًا وَخِيفَةً وَدُونَ الْجَهْرِ مِنَ الْقَوْلِ بِالْغُدُوِّ وَالآصَالِ}</div>
+      <div class="dhikr-counter-row" id="row-s2">
+        <span class="dhikr-val-text" id="cnt-s2">0</span>
+        <div class="dhikr-btn-group">
+          <button class="reset-circle-btn" onclick='resetDhikr("s2")'><i class="fa-solid fa-rotate-right"></i></button>
+          <button class="plus-circle-btn" onclick='incDhikr("s2", event)'>+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dhikr-card">
+      <div class="dhikr-text">أستغفر الله العظيم</div>
+      <div class="dhikr-hadith">《مَنْ لَزِمَ الِاسْتِغْفَارَ جَعَلَ اللَّهُ لَهُ مِنْ كُلِّ ضِيقٍ مَخْرَجًا، وَمِنْ كُّلِّ هَمٍّ فَرَجًا》</div>
+      <div class="dhikr-counter-row" id="row-d1">
+        <span class="dhikr-val-text" id="cnt-d1">0</span>
+        <div class="dhikr-btn-group">
+          <button class="reset-circle-btn" onclick='resetDhikr("d1")'><i class="fa-solid fa-rotate-right"></i></button>
+          <button class="plus-circle-btn" onclick='incDhikr("d1", event)'>+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dhikr-card">
+      <div class="dhikr-text">سبحان الله وبحمده سبحان الله العظيم</div>
+      <div class="dhikr-hadith">《حُطَّت خطاياه وإن كانت مثل زبد البحر》</div>
+      <div class="dhikr-counter-row" id="row-d2">
+        <span class="dhikr-val-text" id="cnt-d2">0</span>
+        <div class="dhikr-btn-group">
+          <button class="reset-circle-btn" onclick='resetDhikr("d2")'><i class="fa-solid fa-rotate-right"></i></button>
+          <button class="plus-circle-btn" onclick='incDhikr("d2", event)'>+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dhikr-card">
+      <div class="dhikr-text">لا حول ولا قوة إلا بالله</div>
+      <div class="dhikr-hadith">《كنز من كنوز الجنة》</div>
+      <div class="dhikr-counter-row" id="row-d3">
+        <span class="dhikr-val-text" id="cnt-d3">0</span>
+        <div class="dhikr-btn-group">
+          <button class="reset-circle-btn" onclick='resetDhikr("d3")'><i class="fa-solid fa-rotate-right"></i></button>
+          <button class="plus-circle-btn" onclick='incDhikr("d3", event)'>+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-dustour" class="section-view">
+    <div class="view-title-block">
+      <h2 style="color:#b45309">دستوري 📖</h2>
+    </div>
+    <div class="ayah-box">
+      <div id="dustourAyahText" class="ayah-text">《 وَاعْتَصِمُوا بِحَبْلِ اللَّهِ جَمِيعاً وَلَا تَفَرَّقُوا 》</div>
+      <button class="ayah-exp-btn" onclick="toggleDustourExp()">شرح الآية 💡</button>
+      <div id="dustourExpText" class="ayah-explanation">
+        يأمرنا الله تعالى بالاتحاد والتمسك بدينه القويم، والبعد عن الفرقة والنزاع لما في ذلك من قوة وصلاح للأمة.
+      </div>
+    </div>
+  </div>
+
+  <div id="view-injaz" class="section-view">
+    <div class="view-title-block">
+      <h2 style="color:#9d174d">إنجازي 📊</h2>
+      <p>أهدافك ومعدل تقدمك :</p>
+    </div>
+
+    <div class="floating-goal-banner">
+      <div class="floating-goal-icon">🎯</div>
+      <div class="floating-goal-title">بطاقة الأهداف</div>
+      
+      <div class="goals-static-grid">
+        <div class="goal-static-card">
+          <div>📖 هدف القرآن (شهر)</div>
+          <div id="staticQuranGoalVal" style="font-size:16px;font-weight:900;margin-top:2px">0 صفحة</div>
+        </div>
+        <div class="goal-static-card">
+          <div>💬 هدف الحديث</div>
+          <div id="staticHadithGoalVal" style="font-size:16px;font-weight:900;margin-top:2px">0 صفحة</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.9);padding:10px;border-radius:14px;">
+        <label style="font-size:12px;font-weight:800;color:#831843;display:block;margin-bottom:4px">📚 هدف الدراسة اليومي (ساعات)</label>
+        <div style="display:flex;gap:8px;">
+          <input type="number" id="inputTargetStudy" style="flex:1;padding:8px;border:2px solid #cbd5e1;border-radius:10px;text-align:center;font-weight:900;font-size:15px;color:#831843" value="5">
+          <button onclick="saveMyStudyGoal()" style="background:#db2777;color:#fff;border:none;padding:8px 16px;border-radius:10px;font-weight:800;cursor:pointer">حفظ</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="injaz-box-rounded">
+      <div class="injaz-box-title">
+        <span>إنجاز القرآن 📜</span>
+        <span id="quranAchievedVal" style="color:#db2777;font-weight:900">0 صفحة</span>
+      </div>
+      <div style="font-size:13px;color:#64748B;margin-bottom:6px">نسبة التسميع المعتمدة: <span id="quranPercentText">0%</span></div>
+      <div class="progress-container"><div id="quranProgressBar" class="progress-bar-fill"></div></div>
+    </div>
+
+    <div class="injaz-box-rounded">
+      <div class="injaz-box-title">
+        <span>إنجاز الحديث الشريف 💬</span>
+        <span id="hadithAchievedVal" style="color:#db2777;font-weight:900">0 صفحة</span>
+      </div>
+      <div style="font-size:13px;color:#64748B;margin-bottom:6px">نسبة التسميع المعتمدة: <span id="hadithPercentText">0%</span></div>
+      <div class="progress-container"><div id="hadithProgressBar" class="progress-bar-fill" style="background:linear-gradient(90deg,#3b82f6,#1d4ed8)"></div></div>
+    </div>
+
+    <div class="injaz-box-rounded">
+      <div class="injaz-box-title">
+        <span>درستُ اليوم 📚</span>
+        <span id="studyTodayAchievedVal" style="color:#db2777;font-weight:900">0 ساعة</span>
+      </div>
+      <div style="font-size:13px;color:#64748B;margin-bottom:6px">نسبة إنجاز هدف اليوم: <span id="studyPercentText">0%</span></div>
+      <div class="progress-container"><div id="studyProgressBar" class="progress-bar-fill" style="background:linear-gradient(90deg,#10b981,#059669)"></div></div>
+    </div>
+
+    <div style="background:#fff;border-radius:var(--radius-lg);padding:16px;margin-top:20px;box-shadow:var(--shadow-soft)">
+      <h4 style="font-size:15px;font-weight:800;color:#831843;margin-bottom:12px">المخطط البياني الأسبوعي (%) 📈</h4>
+      <canvas id="injazChart" height="220"></canvas>
+    </div>
+  </div>
+
+  <div id="view-awsima" class="section-view">
+    <div class="view-title-block">
+      <h2 style="color:#5b21b6">أوسمتي 🏅</h2>
+      <p>الأوسمة الممنوحة لكِ</p>
+    </div>
+    <div class="badges-grid">
+      <div id="badge-box-1" class="badge-box" onclick="badgeTiltEffect(this)">
+        <div class="badge-info-flex">
+          <div class="badge-icon-img">⏰</div>
+          <div>
+            <div class="badge-name">الحضور باكراً</div>
+            <div style="font-size:12px;color:#6b7280;margin-top:2px">وسام الانضباط بالوقت</div>
+          </div>
+        </div>
+        <div id="badge-count-1" class="badge-count-badge">×0</div>
+      </div>
+
+      <div id="badge-box-2" class="badge-box" onclick="badgeTiltEffect(this)">
+        <div class="badge-info-flex">
+          <div class="badge-icon-img">📖</div>
+          <div>
+            <div class="badge-name">الحفظ المتقن</div>
+            <div style="font-size:12px;color:#6b7280;margin-top:2px">وسام إتقان التسميع</div>
+          </div>
+        </div>
+        <div id="badge-count-2" class="badge-count-badge">×0</div>
+      </div>
+
+      <div id="badge-box-3" class="badge-box" onclick="badgeTiltEffect(this)">
+        <div class="badge-info-flex">
+          <div class="badge-icon-img">🌟</div>
+          <div>
+            <div class="badge-name">التفاعل المستمر</div>
+            <div style="font-size:12px;color:#6b7280;margin-top:2px">وسام النشاط والحيوية</div>
+          </div>
+        </div>
+        <div id="badge-count-3" class="badge-count-badge">×0</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-niqati" class="section-view">
+    <div class="view-title-block">
+      <h2 style="color:#713f12">ترتيبي ⭐</h2>
+      <p>موقعك حسب إنجازك </p>
+    </div>
+
+    <div class="ranking-section-card">
+      <div class="ranking-section-title"><i class="fa-solid fa-medal" style="color:#ca8a04"></i> ترتيب الحصول على الأوسمة</div>
+      <div id="rankingBadgesContainer" class="horizontal-rank-slider"></div>
+    </div>
+
+    <div class="ranking-section-card">
+      <div class="ranking-section-title"><i class="fa-solid fa-book-quran" style="color:#059669"></i> ترتيب تسميع القرآن (صفحات)</div>
+      <div id="rankingQuranContainer" class="horizontal-rank-slider"></div>
+    </div>
+
+    <div class="ranking-section-card">
+      <div class="ranking-section-title"><i class="fa-solid fa-comments" style="color:#2563eb"></i> ترتيب تسميع الحديث (صفحات)</div>
+      <div id="rankingHadithContainer" class="horizontal-rank-slider"></div>
+    </div>
+  </div>
+
+  <div id="view-tahaddiyat" class="section-view">
+    <div class="view-title-block"><h2 style="color:#1e40af">تحديات وفائدة 🎮</h2></div>
+    <div class="sub-game-card">
+      <h4 style="font-size:18px;font-weight:800;color:#1e3a8a;text-align:center">عجلة الفوائد 🎡</h4>
+      <div class="wheel-wrapper">
+        <div class="wheel-pointer">▼</div>
+        <canvas id="wheelCanvas" class="wheel-canvas" width="220" height="220"></canvas>
+      </div>
+      <button class="btn-login" style="background:#3b82f6;font-size:16px;padding:12px;width:100%" onclick="spinWheel()">أديري العجلة ✨</button>
+      <div id="wheelResultMsg" style="margin-top:12px;font-size:14px;font-weight:800;color:#1e40af;text-align:center"></div>
+    </div>
+    <div class="sub-game-card">
+      <h4 style="font-size:18px;font-weight:800;color:#1e3a8a">فك الشيفرة 🗝️</h4>
+      <div style="background:#eff6ff;padding:10px;border-radius:10px;margin:10px 0;font-size:13px;color:#1e40af">💡<strong>تلميح: </strong><span id="wordleHintText"></span></div>
+      <div class="wordle-color-legend">
+        <div class="legend-item"><div class="legend-box" style="background:#10b981"></div><span>صح ومكانه صح</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#f59e0b"></div><span>صح بس مكانه غلط</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#64748b"></div><span>الحرف غير موجود</span></div>
+      </div>
+      <div id="wordleGridContainer" class="wordle-grid-container"></div>
+      <div style="display:flex;gap:10px">
+        <input type="text" id="wordleInput" style="flex:1;padding:10px;border-radius:10px;border:2px solid #cbd5e1;text-align:center;font-weight:800;font-size:16px" placeholder="الكلمة">
+        <button onclick="checkWordle()" style="padding:10px 20px;background:#10b981;color:#fff;border:none;border-radius:10px;font-weight:800">تحقق</button>
+      </div>
+      <div id="wordleStatus" style="font-size:13px;font-weight:800;margin-top:10px"></div>
+    </div>
+    <div class="sub-game-card">
+      <h4 style="font-size:18px;font-weight:800;color:#1e3a8a">لغز اليوم 🧩</h4>
+      <p id="riddleQuestionText" style="font-size:14px;color:#334155;margin:10px 0"></p>
+      <div style="font-size:13px;color:#0284c7;margin-bottom:10px;font-weight:700" id="riddleHintText"></div>
+      <div style="display:flex;gap:10px">
+        <input type="text" id="riddleInput" style="flex:1;padding:10px;border-radius:10px;border:2px solid #cbd5e1;font-weight:800;font-size:15px" placeholder="الإجابة...">
+        <button onclick="checkRiddle()" style="padding:10px 20px;background:#3b82f6;color:#fff;border:none;border-radius:10px;font-weight:800">إدخال</button>
+      </div>
+      <div id="riddleStatus" style="font-size:13px;font-weight:800;margin-top:10px"></div>
+    </div>
+  </div>
+
+  <div id="view-avatar" class="section-view">
+    <div class="view-title-block">
+      <h2 style="color:#c2410c">تصميم شخصيتي 🌸</h2>
+      <p>صممي شخصيتك المميزة</p>
+    </div>
+    <div class="avatar-display-large" id="largeAvatarBox"></div>
+    <div class="avatar-option-group">
+      <label>لون الخلفية 🎨</label>
+      <div class="opt-buttons">
+        <button class="opt-btn" onclick='setAvatarBg("#E0F2FE")'>أزرق سماوي</button>
+        <button class="opt-btn" onclick='setAvatarBg("#FCE7F3")'>وردي لطيف</button>
+        <button class="opt-btn" onclick='setAvatarBg("#E9D5FF")'>لافندر 🪻</button>
+        <button class="opt-btn" onclick='setAvatarBg("#FEF08A")'>أصفر مشرق</button>
+        <button class="opt-btn" onclick='setAvatarBg("#DCFCE7")'>أخضر نعناعي</button>
+      </div>
+    </div>
+    <div class="avatar-option-group">
+      <label>الإضافات</label>
+      <div class="opt-buttons">
+        <button class="opt-btn" onclick='setAccessory("none")'>بدون</button>
+        <button class="opt-btn" onclick='setAccessory("flower")'>وردة</button>
+        <button class="opt-btn" onclick='setAccessory("butterfly")'>فراشة</button>
+        <button class="opt-btn" onclick='setAccessory("bow")'>عقدة</button>
+        <button class="opt-btn" onclick='setAccessory("hat")'>قبعة </button>
+      </div>
+    </div>
+    <div class="avatar-option-group">
+      <label>النظارات 👓</label>
+      <div class="opt-buttons">
+        <button class="opt-btn" onclick='setGlasses("none")'>بدون نظارة</button>
+        <button class="opt-btn" onclick='setGlasses("medical")'>نظارة طبية</button>
+        <button class="opt-btn" onclick='setGlasses("sun")'>نظارة شمسية</button>
+      </div>
+    </div>
+    <div class="avatar-option-group">
+      <label>اللباس</label>
+      <div class="opt-buttons">
+        <button class="opt-btn" onclick='setShirt("1")'>اللباس 1</button>
+        <button class="opt-btn" onclick='setShirt("2")'>اللباس 2</button>
+        <button class="opt-btn" onclick='setShirt("3")'>اللباس 3</button>
+        <button class="opt-btn" onclick='setShirt("4")'>اللباس 4</button>
+        <button class="opt-btn" onclick='setShirt("5")'>اللباس 5</button>
+      </div>
+    </div>
+    <button class="btn-login" style="background:#f97316;margin-top:10px;width:100%;border-radius:16px;padding:14px" onclick="saveAvatarAndReturn()">حفظ والعودة ✨</button>
+  </div>
+
+  <div id="logoutModal" class="custom-modal-overlay">
+    <div class="custom-modal">
+      <h3>تنبيه ⚠️</h3>
+      <p>هل تريدين تسجيل الخروج؟</p>
+      <div class="modal-btn-group">
+        <button class="modal-btn modal-btn-confirm" onclick="executeLogout()">نعم</button>
+        <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">لا</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbxp6F0fbuB8h_x11crtbDkf0WCVDPPk46Lz5Ni5P1t_xnGszDY0yRLkNr3jbezEMeBj-Q/exec"; 
+
+let studentsData = {};
+let currentStudentPass = null;
+let currentStudent = null;
+let chartInstance = null;
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function getProgramDateString() {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Damascus', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).formatToParts(new Date());
+    const values = {};
+    parts.forEach(part => { if (part.type !== 'literal') values[part.type] = part.value; });
+    return `${values.year}-${values.month}-${values.day}`;
+}
+
+function resetDailyStudentData(todayStr) {
+    if (!currentStudent || !currentStudentPass) return;
+    currentStudent.s1 = 0;
+    currentStudent.s2 = 0;
+    currentStudent.d1 = 0;
+    currentStudent.d2 = 0;
+    currentStudent.d3 = 0;
+    currentStudent.yawmiData = { prayers: "حافظت ع فرائضي ولله الحمد👍🏻", sunan: "", witr: false, quranHours: 0, studyHours: 0, birr: "", studentReply: "" };
+    currentStudent.lastYawmiDate = todayStr;
+    currentStudent.lastActiveDate = todayStr;
+    document.getElementById('cnt-s1').innerText = '0';
+    document.getElementById('cnt-s2').innerText = '0';
+    document.getElementById('cnt-d1').innerText = '0';
+    document.getElementById('cnt-d2').innerText = '0';
+    document.getElementById('cnt-d3').innerText = '0';
+    checkTodayYawmiStatus();
+    localStorage.setItem('saved_yawmi_' + currentStudentPass, JSON.stringify({
+        date: todayStr, data: currentStudent.yawmiData, s1: 0, s2: 0, d1: 0, d2: 0, d3: 0
+    }));
+}
+
+function ensureCurrentProgramDay() {
+    const todayStr = getProgramDateString();
+    const label = document.getElementById('todayDateLabel');
+    if (label) label.innerText = 'اليوم: ' + todayStr;
+    if (currentStudent && currentStudentPass && currentStudent.lastActiveDate && currentStudent.lastActiveDate !== todayStr) {
+        resetDailyStudentData(todayStr);
+    }
+}
+
+function playSound(type) {
+    if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    if (type === 'tasbeeh') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.015, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.12);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.12);
+    } else if (type === 'click') {
+        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+    } else if (type === 'success') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+    }
+}
+
+async function fetchStudentsData() {
+    try {
+        const response = await fetch(GOOGLE_SHEETS_URL + "?cache=" + Date.now(), { cache: "no-store" });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        const data = await response.json();
+        if (!data || typeof data !== 'object' || Array.isArray(data)) {
+            throw new Error("استجابة البيانات غير صالحة");
+        }
+        const validEntries = Object.entries(data).filter(([key, value]) =>
+            key !== 'success' && value && typeof value === 'object' &&
+            (value.Name || value.name || (value.student && (value.student.Name || value.student.name)) || value.success === true)
+        );
+        if (validEntries.length) {
+            const normalized = {};
+            validEntries.forEach(([key, value]) => {
+                const nested = value.student && typeof value.student === 'object' ? value.student : {};
+                normalized[String(key).trim()] = Object.assign({}, nested, value);
+            });
+            studentsData = normalized;
+            return true;
+        }
+        if (Object.keys(studentsData).length) return true;
+        return false;
+    } catch (e) {
+        console.error("تعذر جلب بيانات الطالبات:", e);
+        return false;
+    }
+}
+
+window.onload = function() {
+    fetchStudentsData();
+    initSnow();
+    ensureCurrentProgramDay();
+    setInterval(ensureCurrentProgramDay, 30000);
+};
+
+function initSnow() {
+    const container = document.getElementById('snowContainer');
+    if (!container) return;
+    container.innerHTML = '';
+    for (let i = 0; i < 24; i++) {
+        const flake = document.createElement('div');
+        flake.className = 'snowflake';
+        flake.innerText = i % 2 === 0 ? '❄' : '🌨';
+        flake.style.left = Math.random() * 100 + '%';
+        flake.style.animationDuration = (Math.random() * 3 + 3) + 's';
+        container.appendChild(flake);
+    }
+}
+
+async function login() {
+    const nameInp = String(document.getElementById('studentNameInput').value).trim();
+    const pass = String(document.getElementById('studentPass').value).trim();
+    const err = document.getElementById('errorMsg');
+    const loadBox = document.getElementById('loadingBox');
+    
+    err.style.display = 'none';
+    if (!nameInp || !pass) return;
+
+    loadBox.style.display = 'flex';
+    const dataReady = Object.keys(studentsData).length > 0 || await fetchStudentsData();
+    loadBox.style.display = 'none';
+
+    if (!dataReady || Object.keys(studentsData).length === 0) {
+        err.innerText = 'تعذّر الاتصال ببيانات التطبيق. تحققي من اتصال الإنترنت.';
+        err.style.display = 'block';
+        return;
+    }
+
+    const record = studentsData[pass];
+    const sheetName = String(record?.Name || record?.name || record?.student?.Name || record?.student?.name || '').trim();
+
+    if (record && sheetName === nameInp) {
+        playSound('success');
+        currentStudentPass = pass;
+        currentStudent = Object.assign({}, record.student || {}, record);
+        if (!currentStudent.name && currentStudent.Name) currentStudent.name = currentStudent.Name;
+        
+        const localAvatar = localStorage.getItem('ghars_avatar_' + pass);
+        if (localAvatar) {
+            try { currentStudent.avatar = JSON.parse(localAvatar); }
+            catch(e) { currentStudent.avatar = { bgColor: '#E0F2FE', glasses: 'none', accessory: 'none', shirt: '1' }; }
+        } else if (!currentStudent.avatar) {
+            currentStudent.avatar = { bgColor: '#E0F2FE', glasses: 'none', accessory: 'none', shirt: '1' };
+        }
+        
+        const todayStr = getProgramDateString();
+        const localSaved = localStorage.getItem('saved_yawmi_' + pass);
+        
+        if (localSaved) {
+            let parsed = JSON.parse(localSaved);
+            if (parsed.date === todayStr) {
+                currentStudent.yawmiData = parsed.data;
+                currentStudent.s1 = parsed.s1;
+                currentStudent.s2 = parsed.s2;
+                currentStudent.d1 = parsed.d1;
+                currentStudent.d2 = parsed.d2;
+                currentStudent.d3 = parsed.d3;
+                currentStudent.lastYawmiDate = todayStr;
+            } else {
+                localStorage.removeItem('saved_yawmi_' + pass);
+                resetDailyStudentData(todayStr);
+            }
+        } else {
+            resetDailyStudentData(todayStr);
+        }
+        currentStudent.lastActiveDate = todayStr;
+
+        localStorage.setItem('ghars_student_pass', pass);
+
+        document.getElementById('barStudentName').innerText = currentStudent.name;
+        document.getElementById('homeWelcomeTitle').innerText = "أهلاً " + currentStudent.name;
+
+        document.getElementById('staticQuranGoalVal').innerText = (currentStudent.monthlyGoal > 0 ? currentStudent.monthlyGoal + ' صفحة' : '--');
+document.getElementById('staticHadithGoalVal').innerText = (currentStudent.hadithGoal > 0 ? currentStudent.hadithGoal + ' صفحة' : '--');
+        document.getElementById('inputTargetStudy').value = currentStudent.studyGoal || 5;
+
+        document.getElementById('cnt-s1').innerText = currentStudent.s1 || 0;
+        document.getElementById('cnt-s2').innerText = currentStudent.s2 || 0;
+        document.getElementById('cnt-d1').innerText = currentStudent.d1 || 0;
+        document.getElementById('cnt-d2').innerText = currentStudent.d2 || 0;
+        document.getElementById('cnt-d3').innerText = currentStudent.d3 || 0;
+
+        if (currentStudent.dustourAyah) document.getElementById('dustourAyahText').innerText = currentStudent.dustourAyah;
+        if (currentStudent.dustourExp) document.getElementById('dustourExpText').innerText = currentStudent.dustourExp;
+
+        if (currentStudent.messageTitle) document.getElementById('msgTitleBox').innerText = currentStudent.messageTitle;
+        if (currentStudent.messageBody) {
+            document.getElementById('msgContentBox').innerText = currentStudent.messageBody;
+            if (localStorage.getItem('read_msg_' + pass) !== currentStudent.messageBody) {
+                document.getElementById('mailBadge').style.display = 'flex';
+            }
+        }
+
+        checkTodayYawmiStatus();
+        updateBadgesUI();
+        renderAvatar();
+
+        document.getElementById('screenLogin').classList.add('hidden');
+        confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
+    } else {
+        err.style.display = 'block';
+    }
+}
+
+function confirmLogout() { playSound('click'); document.getElementById('logoutModal').style.display = 'flex'; }
+function closeLogoutModal() { playSound('click'); document.getElementById('logoutModal').style.display = 'none'; }
+function executeLogout() {
+    playSound('click');
+    document.getElementById('logoutModal').style.display = 'none';
+    localStorage.removeItem('ghars_student_pass');
+    currentStudentPass = null;
+    currentStudent = null;
+    document.getElementById('studentNameInput').value = '';
+    document.getElementById('studentPass').value = '';
+    document.getElementById('screenLogin').classList.remove('hidden');
+    navToHome();
+}
+
+function checkTodayYawmiStatus() {
+    if (!currentStudent || !currentStudent.yawmiData) return;
+    const yd = currentStudent.yawmiData;
+    document.getElementById('yawmiPrayers').value = yd.prayers || "حافظت ع فرائضي ولله الحمد👍🏻";
+    document.getElementById('yawmiSunan').value = yd.sunan || "";
+    document.getElementById('yawmiWitrCheck').checked = yd.witr === "نعم" || yd.witr === true;
+    document.getElementById('yawmiQuranHours').value = yd.quranHours || "";
+    document.getElementById('yawmiStudyHours').value = yd.studyHours || "";
+    if (yd.studentReply) document.getElementById('studentReplyInput').value = yd.studentReply;
+    if (yd.birr) setBirr(yd.birr, null);
+}
+
+function setBirr(val, btn) {
+    playSound('click');
+    document.getElementById('yawmiBirrVal').value = val;
+    document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+    if (btn) {
+        btn.classList.add('selected');
+    } else {
+        document.querySelectorAll('.emoji-btn').forEach(b => { if (b.innerText === val) b.classList.add('selected'); });
+    }
+}
+
+function sendStudentReply() {
+    if (!currentStudent) return;
+    ensureCurrentProgramDay();
+    playSound('success');
+    const replyText = document.getElementById('studentReplyInput').value.trim();
+    if (!replyText) {
+        alert("الرجاء كتابة الرد أولاً 🌸");
+        return;
+    }
+    if (!currentStudent.yawmiData) currentStudent.yawmiData = {};
+    currentStudent.yawmiData.studentReply = replyText;
+
+    const todayStr = getProgramDateString();
+    localStorage.setItem('saved_yawmi_' + currentStudentPass, JSON.stringify({
+        date: todayStr,
+        data: currentStudent.yawmiData,
+        s1: currentStudent.s1,
+        s2: currentStudent.s2,
+        d1: currentStudent.d1,
+        d2: currentStudent.d2,
+        d3: currentStudent.d3
+    }));
+
+    syncDataToServer();
+    confetti({ particleCount: 30, spread: 50 });
+    alert("تم إرسال ردكِ للمعلمة بنجاح 💌");
+}
+
+function saveYawmiData() {
+    if (!currentStudent) return;
+    ensureCurrentProgramDay();
+    playSound('success');
+    const todayStr = getProgramDateString();
+    const todayStudyHours = Number(document.getElementById('yawmiStudyHours').value) || 0;
+    
+    currentStudent.lastYawmiDate = todayStr;
+    currentStudent.yawmiData = {
+        prayers: document.getElementById('yawmiPrayers').value,
+        sunan: document.getElementById('yawmiSunan').value,
+        witr: document.getElementById('yawmiWitrCheck').checked ? "نعم" : "لا",
+        quranHours: Number(document.getElementById('yawmiQuranHours').value) || 0,
+        studyHours: todayStudyHours,
+        birr: document.getElementById('yawmiBirrVal').value,
+        studentReply: document.getElementById('studentReplyInput').value.trim()
+    };
+
+    // تسجيل وتحديث سجل الدراسة اليومية للأسبوع
+    const d = new Date();
+    const dayIndex = d.getDay(); // 0: Sun, 1: Mon... 6: Sat
+    const mapDayToLabelIndex = { 6: 0, 0: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6 }; // سبت إلى جمعة
+    const idx = mapDayToLabelIndex[dayIndex];
+
+    let weeklyLogs = JSON.parse(localStorage.getItem('study_weekly_logs_' + currentStudentPass) || '[0,0,0,0,0,0,0]');
+    weeklyLogs[idx] = todayStudyHours;
+    localStorage.setItem('study_weekly_logs_' + currentStudentPass, JSON.stringify(weeklyLogs));
+
+    localStorage.setItem('saved_yawmi_' + currentStudentPass, JSON.stringify({
+        date: todayStr,
+        data: currentStudent.yawmiData,
+        s1: currentStudent.s1,
+        s2: currentStudent.s2,
+        d1: currentStudent.d1,
+        d2: currentStudent.d2,
+        d3: currentStudent.d3
+    }));
+
+    syncDataToServer();
+    confetti({ particleCount: 30, spread: 50 });
+    alert("تم حفظ برنامجك اليومي بنجاح 🌟");
+}
+
+function saveMyStudyGoal() {
+    if (!currentStudent) return;
+    playSound('success');
+    currentStudent.studyGoal = Number(document.getElementById('inputTargetStudy').value) || 5;
+    syncDataToServer();
+    alert("تم حفظ هدف الدراسة اليومي بنجاح ✨");
+    openSection('injaz');
+}
+
+function badgeTiltEffect(el) {
+    playSound('click');
+    el.style.transform = 'scale(1.1) rotate(5deg)';
+    setTimeout(() => {
+        el.style.transform = '';
+    }, 300);
+}
+
+function updateBadgesUI() {
+    if (!currentStudent) return;
+    const b = currentStudent.badges || { b1: 0, b2: 0, b3: 0 };
+    document.getElementById('badge-count-1').innerText = '×' + (b.b1 || 0);
+    document.getElementById('badge-count-2').innerText = '×' + (b.b2 || 0);
+    document.getElementById('badge-count-3').innerText = '×' + (b.b3 || 0);
+    if ((b.b1 || 0) > 0) document.getElementById('badge-box-1').classList.add('has-badge');
+    if ((b.b2 || 0) > 0) document.getElementById('badge-box-2').classList.add('has-badge');
+    if ((b.b3 || 0) > 0) document.getElementById('badge-box-3').classList.add('has-badge');
+}
+
+function updateRankingsUI() {
+    if (!studentsData) return;
+    const allSt = Object.values(studentsData);
+
+    const sortedBadges = [...allSt].sort((a, b) => {
+        const sumA = (Number(a.badges?.b1)||0) + (Number(a.badges?.b2)||0) + (Number(a.badges?.b3)||0);
+        const sumB = (Number(b.badges?.b1)||0) + (Number(b.badges?.b2)||0) + (Number(b.badges?.b3)||0);
+        return sumB - sumA;
+    });
+    renderHorizontalRankSlider('rankingBadgesContainer', sortedBadges, st => {
+        return ((Number(st.badges?.b1)||0) + (Number(st.badges?.b2)||0) + (Number(st.badges?.b3)||0)) + ' أوسمة';
+    });
+
+    const sortedQuran = [...allSt].sort((a, b) => (Number(b.quran) || 0) - (Number(a.quran) || 0));
+    renderHorizontalRankSlider('rankingQuranContainer', sortedQuran, st => (Number(st.quran) || 0) + ' صفحة');
+
+    const sortedHadith = [...allSt].sort((a, b) => (Number(b.hadith) || 0) - (Number(a.hadith) || 0));
+    renderHorizontalRankSlider('rankingHadithContainer', sortedHadith, st => (Number(st.hadith) || 0) + ' صفحة');
+}
+
+function renderHorizontalRankSlider(containerId, sortedArray, valFormatter) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    sortedArray.forEach((st, index) => {
+        const rank = index + 1;
+        const stName = st.name || st.Name || '';
+        const isMe = (stName === currentStudent?.name);
+        
+        const card = document.createElement('div');
+        card.className = `rank-card-item ${isMe ? 'is-me' : ''}`;
+
+        let medal = rank === 1 ? '🏆 المرتبة 1' : (rank === 2 ? '🥈 المرتبة 2' : (rank === 3 ? '🥉 المرتبة 3' : `⭐ المركز ${rank}`));
+        let displayName = isMe ? `${stName}` : `✨️`;
+        let displayVal = valFormatter(st);
+
+        card.innerHTML = `
+            <div class="rank-card-badge">${rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : '⭐'))}</div>
+            <div class="rank-card-name">${displayName}</div>
+            <div style="font-size:10px;color:#94a3b8;margin-bottom:4px">${medal}</div>
+            <div class="rank-card-val">${displayVal}</div>
+        `;
+        container.appendChild(card);
+    });
+} // <--- هنا تنتهي الدالة تماماً عند قوس الإغلاق }
+
+function openSection(secId) {
+    playSound('click');
+    document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
+    const target = document.getElementById('view-' + secId);
+    if (target) {
+        target.classList.add('active');
+        document.getElementById('backBtn').style.display = 'flex';
+    }
+    if (secId === 'injaz') {
+        const qAch = Number(currentStudent.quran) || 0;
+        const qGoal = Number(currentStudent.monthlyGoal) || 30;
+        const hAch = Number(currentStudent.hadith) || 0;
+        const hGoal = Number(currentStudent.hadithGoal) || 15;
+        const sGoal = Number(currentStudent.studyGoal) || 5;
+        const sToday = Number(currentStudent.yawmiData?.studyHours) || 0;
+
+        document.getElementById('quranAchievedVal').innerText = qAch + ' صفحة';
+        let qPer = Math.min(100, Math.round((qAch / qGoal) * 100));
+        document.getElementById('quranPercentText').innerText = qPer + '%';
+        document.getElementById('quranProgressBar').style.width = qPer + '%';
+
+        document.getElementById('hadithAchievedVal').innerText = hAch + ' صفحة';
+        let hPer = Math.min(100, Math.round((hAch / hGoal) * 100));
+        document.getElementById('hadithPercentText').innerText = hPer + '%';
+        document.getElementById('hadithProgressBar').style.width = hPer + '%';
+
+        document.getElementById('studyTodayAchievedVal').innerText = sToday + ' ساعة';
+        let sPer = Math.min(100, Math.round((sToday / sGoal) * 100));
+        document.getElementById('studyPercentText').innerText = sPer + '%';
+        document.getElementById('studyProgressBar').style.width = sPer + '%';
+
+        initLineChart(qPer, hPer, sGoal);
+    }
+    if (secId === 'niqati') {
+        updateRankingsUI();
+        fireConfetti();
+    }
+    if (secId === 'awsima') {
+        updateBadgesUI();
+        fireConfetti();
+    }
+    if (secId === 'tahaddiyat') {
+        drawWheel();
+        initWordle();
+        if (currentStudent.riddleQuestion) document.getElementById('riddleQuestionText').innerText = currentStudent.riddleQuestion;
+        if (currentStudent.riddleHint) document.getElementById('riddleHintText').innerText = "💡 تلميح: " + currentStudent.riddleHint;
+    }
+    if (secId === 'avatar') {
+        renderAvatar();
+    }
+}
+
+function navToHome() {
+    playSound('click');
+    document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
+    document.getElementById('backBtn').style.display = 'none';
+    document.getElementById('mailboxDropdown').style.display = 'none';
+    renderAvatar();
+}
+
+function toggleMailbox() {
+    playSound('click');
+    const box = document.getElementById('mailboxDropdown');
+    box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+    if (currentStudent) localStorage.setItem('read_msg_' + currentStudentPass, currentStudent.messageBody);
+    document.getElementById('mailBadge').style.display = 'none';
+}
+
+function incDhikr(key, event) {
+    playSound('tasbeeh');
+    if (!currentStudent) return;
+    ensureCurrentProgramDay();
+    currentStudent[key] = (currentStudent[key] || 0) + 1;
+    document.getElementById('cnt-' + key).innerText = currentStudent[key];
+    
+    const todayStr = getProgramDateString();
+    localStorage.setItem('saved_yawmi_' + currentStudentPass, JSON.stringify({
+        date: todayStr,
+        data: currentStudent.yawmiData || {},
+        s1: currentStudent.s1,
+        s2: currentStudent.s2,
+        d1: currentStudent.d1,
+        d2: currentStudent.d2,
+        d3: currentStudent.d3
+    }));
+
+    syncDataToServer();
+
+    if (event) {
+        const spark = document.createElement('div');
+        spark.className = 'dhikr-pop-spark';
+        spark.innerText = '+1 ✨';
+        const row = document.getElementById('row-' + key);
+        if (row) {
+            row.appendChild(spark);
+            setTimeout(() => spark.remove(), 600);
+        }
+    }
+}
+
+function resetDhikr(key) {
+    playSound('click');
+    if (!currentStudent) return;
+    ensureCurrentProgramDay();
+    currentStudent[key] = 0;
+    document.getElementById('cnt-' + key).innerText = 0;
+    
+    const todayStr = getProgramDateString();
+    localStorage.setItem('saved_yawmi_' + currentStudentPass, JSON.stringify({
+        date: todayStr,
+        data: currentStudent.yawmiData || {},
+        s1: currentStudent.s1,
+        s2: currentStudent.s2,
+        d1: currentStudent.d1,
+        d2: currentStudent.d2,
+        d3: currentStudent.d3
+    }));
+
+    syncDataToServer();
+}
+
+function toggleDustourExp() {
+    playSound('click');
+    document.getElementById('dustourExpText').classList.toggle('show');
+}
+
+// المخطط البياني النقطي الأسبوعي المرتبط فعلياً بالإنجازات الحقيقية %
+function initLineChart(qPer, hPer, sGoal) {
+    if (chartInstance) chartInstance.destroy();
+    const ctx = document.getElementById('injazChart').getContext('2d');
+    
+    let weeklyLogs = JSON.parse(localStorage.getItem('study_weekly_logs_' + currentStudentPass) || '[0,0,0,0,0,0,0]');
+    let studyPercentages = weeklyLogs.map(hours => Math.min(100, Math.round((hours / (sGoal || 5)) * 100)));
+
+    chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
+            datasets: [
+                {
+                    label: 'تسميع القرآن (%)',
+                    data: [qPer, qPer, qPer, qPer, qPer, qPer, qPer],
+                    borderColor: '#ec4899',
+                    backgroundColor: '#ec4899',
+                    pointRadius: 6,
+                    pointHoverRadius: 9,
+                    tension: 0.2
+                },
+                {
+                    label: 'تسميع الحديث (%)',
+                    data: [hPer, hPer, hPer, hPer, hPer, hPer, hPer],
+                    borderColor: '#2563eb',
+                    backgroundColor: '#2563eb',
+                    pointRadius: 6,
+                    pointHoverRadius: 9,
+                    tension: 0.2
+                },
+                {
+                    label: 'إنجاز الدراسة اليومي (%)',
+                    data: studyPercentages,
+                    borderColor: '#10b981',
+                    backgroundColor: '#10b981',
+                    pointRadius: 6,
+                    pointHoverRadius: 9,
+                    tension: 0.2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top', labels: { font: { family: 'Cairo', weight: 'bold' } } }
+            },
+            scales: {
+                y: {
+                    min: 0,
+                    max: 100,
+                    ticks: { callback: function(value) { return value + '%'; } }
+                }
+            }
+        }
+    });
+}
+
+const wheelColors = ['#F43F5E', '#10B981', '#F59E0B', '#6366F1'];
+let currentWheelAngle = 0;
+
+function drawWheel() {
+    const canvas = document.getElementById('wheelCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const sliceAngle = (2 * Math.PI) / 4;
+    ctx.clearRect(0, 0, 220, 220);
+    for (let i = 0; i < 4; i++) {
+        ctx.beginPath();
+        ctx.fillStyle = wheelColors[i];
+        ctx.moveTo(110, 110);
+        ctx.arc(110, 110, 110, i * sliceAngle, (i + 1) * sliceAngle);
+        ctx.fill();
+    }
+}
+
+function spinWheel() {
+    playSound('click');
+    const canvas = document.getElementById('wheelCanvas');
+    const randIndex = Math.floor(Math.random() * 4);
+    const targetDegree = 1800 + (randIndex * 90) + 45;
+    currentWheelAngle += targetDegree;
+    canvas.style.transform = `rotate(${currentWheelAngle}deg)`;
+
+    setTimeout(() => {
+        playSound('success');
+        const benefitsList = currentStudent?.wheelBenefits || ["الكلمة الطيبة صدقة", "بورك لأمتي في بكورها", "الوالد أوسط أبواب الجنة", "اغتنم خمساً قبل خمس"];
+        document.getElementById('wheelResultMsg').innerText = "💡 فائدة العجلة: " + (benefitsList[randIndex] || "");
+        fireConfetti();
+    }, 3500);
+}
+
+function initWordle() {
+    const wordInfo = currentStudent?.wordleGame || { word: "إحسان", hint: "خلق كريم" };
+    document.getElementById('wordleHintText').innerText = wordInfo.hint;
+    const container = document.getElementById('wordleGridContainer');
+    container.innerHTML = '';
+    const row = document.createElement('div');
+    row.className = 'wordle-row';
+    for (let i = 0; i < wordInfo.word.length; i++) {
+        const box = document.createElement('div');
+        box.className = 'wordle-box';
+        box.id = 'wbox-' + i;
+        row.appendChild(box);
+    }
+    container.appendChild(row);
+    document.getElementById('wordleStatus').innerText = '';
+}
+
+function checkWordle() {
+    const inp = document.getElementById('wordleInput').value.trim();
+    const wordInfo = currentStudent?.wordleGame || { word: "إحسان" };
+    const target = wordInfo.word;
+    const status = document.getElementById('wordleStatus');
+
+    if (inp.length !== target.length) {
+        status.style.color = '#EF4444';
+        status.innerText = `اكتبي كلمة من ${target.length} أحرف!`;
+        return;
+    }
+    playSound('click');
+    for (let i = 0; i < target.length; i++) {
+        const box = document.getElementById('wbox-' + i);
+        const char = inp[i];
+        box.innerText = char;
+        if (char === target[i]) box.className = 'wordle-box correct';
+        else if (target.includes(char)) box.className = 'wordle-box misplaced';
+        else box.className = 'wordle-box wrong';
+    }
+    if (inp === target) {
+        playSound('success');
+        status.style.color = '#10b981';
+        status.innerText = "أحسنتِ! إجابة فك الشيفرة صحيحة ✨";
+        fireConfetti();
+    } else {
+        status.style.color = '#F59E0B';
+        status.innerText = "تابعي التخمين بحسب دلالة الألوان.";
+    }
+}
+
+function checkRiddle() {
+    const ans = document.getElementById('riddleInput').value.trim();
+    const status = document.getElementById('riddleStatus');
+    const correctAns = currentStudent?.riddleAnswer || "";
+
+    if (ans === correctAns) {
+        playSound('success');
+        status.style.color = '#10b981';
+        status.innerText = "إجابة اللغز رائعة وصحيحة! ✨";
+        fireConfetti();
+    } else {
+        playSound('click');
+        status.style.color = '#EF4444';
+        status.innerText = "إجابة خاطئة، حاولي مجدداً!";
+    }
+}
+
+function setAvatarBg(color) { playSound('click'); if(currentStudent) { if(!currentStudent.avatar) currentStudent.avatar = {}; currentStudent.avatar.bgColor = color; } renderAvatar(); }
+function setGlasses(type) { playSound('click'); if(currentStudent) { if(!currentStudent.avatar) currentStudent.avatar = {}; currentStudent.avatar.glasses = type; } renderAvatar(); }
+function setAccessory(acc) { playSound('click'); if(currentStudent) { if(!currentStudent.avatar) currentStudent.avatar = {}; currentStudent.avatar.accessory = acc; } renderAvatar(); }
+function setShirt(style) { playSound('click'); if(currentStudent) { if(!currentStudent.avatar) currentStudent.avatar = {}; currentStudent.avatar.shirt = style; } renderAvatar(); }
+
+function renderAvatar() {
+    if (!currentStudent) return;
+    if (!currentStudent.avatar) currentStudent.avatar = { bgColor: '#E0F2FE', glasses: 'none', accessory: 'none', shirt: '1' };
+    const conf = currentStudent.avatar;
+    let glassesSvg = '';
+    if (conf.glasses === 'medical') glassesSvg = `<circle cx="38" cy="48" r="8" stroke="#1E293B" stroke-width="2" fill="none"/><circle cx="62" cy="48" r="8" stroke="#1E293B" stroke-width="2" fill="none"/><line x1="46" y1="48" x2="54" y2="48" stroke="#1E293B" stroke-width="2"/>`;
+    else if (conf.glasses === 'sun') glassesSvg = `<circle cx="38" cy="48" r="8" fill="#1E293B"/><circle cx="62" cy="48" r="8" fill="#1E293B"/><line x1="46" y1="48" x2="54" y2="48" stroke="#1E293B" stroke-width="2"/>`;
+
+    let accSvg = '';
+    if (conf.accessory === 'flower') accSvg = `<g transform="translate(64, 32)"><circle cx="0" cy="0" r="4" fill="#EC4899"/><circle cx="-4" cy="0" r="3" fill="#F472B6"/><circle cx="4" cy="0" r="3" fill="#F472B6"/><circle cx="0" cy="-4" r="3" fill="#F472B6"/><circle cx="0" cy="4" r="3" fill="#F472B6"/><circle cx="0" cy="0" r="1.5" fill="#FDE047"/></g>`;
+    else if (conf.accessory === 'butterfly') accSvg = `<g transform="translate(64, 32)"><ellipse cx="-3" cy="-2" rx="3" ry="5" fill="#8B5CF6"/><ellipse cx="3" cy="-2" rx="3" ry="5" fill="#8B5CF6"/></g>`;
+    else if (conf.accessory === 'bow') accSvg = `<g transform="translate(36, 32)"><polygon points="0,0 -6,-4 -6,4" fill="#EF4444"/><polygon points="0,0 6,-4 6,4" fill="#EF4444"/><circle cx="0" cy="0" r="2.5" fill="#F87171"/></g>`;
+    else if (conf.accessory === 'hat') accSvg = `<g transform="translate(50, 31)"><path d="M -18 -1 Q 0 -12 18 -1 Z" fill="#F59E0B"/><path d="M -24 3 Q 0 -1 24 3 Q 0 6 -24 3 Z" fill="#D97706"/></g>`;
+
+    let shirtSvg = `<path d="M 22 75 L 78 75 L 85 100 L 15 100 Z" fill="#EC4899"/><line x1="50" y1="75" x2="50" y2="100" stroke="white" stroke-width="2"/>`;
+    if (conf.shirt === '2') shirtSvg = `<path d="M 22 75 L 78 75 L 85 100 L 15 100 Z" fill="#8B5CF6"/>`;
+    else if (conf.shirt === '3') shirtSvg = `<path d="M 22 75 L 78 75 L 85 100 L 15 100 Z" fill="#0D9488"/>`;
+    else if (conf.shirt === '4') shirtSvg = `<path d="M 20 72 L 80 72 L 88 100 L 12 100 Z" fill="#F43F5E"/>`;
+    else if (conf.shirt === '5') shirtSvg = `<path d="M 18 70 L 82 70 L 90 100 L 10 100 Z" fill="#1E293B"/>`;
+
+    const svgCode = `<svg class="hijabi-avatar-svg" viewBox="0 0 100 100" style="background:${conf.bgColor};">${shirtSvg}<ellipse cx="50" cy="48" rx="15" ry="17" fill="#FFEDD5"/><path d="M 32 45 C 32 24, 68 24, 68 45 C 68 62, 76 75, 78 80 L 22 80 C 24 75, 32 62, 32 45 Z" fill="#FFFFFF"/><ellipse cx="50" cy="46" rx="13" ry="14" fill="#FFEDD5"/>${accSvg}${glassesSvg}</svg>`;
+    
+    const pBox = document.getElementById('avatarPreviewContainer');
+    if (pBox) pBox.innerHTML = svgCode;
+    const lgBox = document.getElementById('largeAvatarBox');
+    if (lgBox) lgBox.innerHTML = svgCode;
+}
+
+function saveAvatarAndReturn() {
+    playSound('success');
+    if (currentStudentPass && currentStudent && currentStudent.avatar) {
+        localStorage.setItem('ghars_avatar_' + currentStudentPass, JSON.stringify(currentStudent.avatar));
+    }
+    navToHome();
+}
+
+function fireConfetti() { confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } }); }
+
+function syncDataToServer() {
+    if (!currentStudentPass || !currentStudent) return;
+    let totalDhikrSum = (currentStudent.s1 || 0) + (currentStudent.s2 || 0) + (currentStudent.d1 || 0) + (currentStudent.d2 || 0) + (currentStudent.d3 || 0);
+    const todayStr = getProgramDateString();
+    let dailyData = currentStudent.yawmiData || {};
+
+    let payload = {
+        pass: currentStudentPass,
+        ...dailyData,
+        totalDhikr: totalDhikrSum,
+        studyGoal: currentStudent.studyGoal || 0,
+        clientDate: todayStr,
+        data: {
+            ...currentStudent,
+            ...dailyData,
+            totalDhikr: totalDhikrSum,
+            studyGoal: currentStudent.studyGoal || 0,
+            clientDate: todayStr
+        }
+    };
+
+    fetch(GOOGLE_SHEETS_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    }).catch(e => console.error("Sync error:", e));
+}
+</script>
+</body>
+</html>
