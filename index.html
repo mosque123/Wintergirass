@@ -613,7 +613,7 @@ body{background-color:#0f172a;display:flex;justify-content:center;align-items:ce
       </div>
       <div id="dustourExtraPanel" class="extra-bulb-panel">
         <div id="dustourSimpleNote" class="extra-simple-note">
-          حتّى تكوني على أتمّ الجاهزية لمسابقتنا، إليك بطاقات تساعد في استرجاع معلوماتك
+          حتّى تكوني على أتمّ الجاهزية لمسابقتنا، إليك بطاقات تساعد في استرجاع معلوماتك:
         </div>
         <div id="dustourExtraImages" class="extra-images-list"></div>
       </div>
@@ -1425,9 +1425,11 @@ const DUSTOUR_EXTRA_IMAGES = [
   "dustour10.jpg"
 ];
 
+let dustourExtraLoaded = false;
+
 function renderDustourExtraImages() {
   const box = document.getElementById("dustourExtraImages");
-  if (!box) return;
+  if (!box || dustourExtraLoaded) return;
   box.innerHTML = "";
 
   DUSTOUR_EXTRA_IMAGES.forEach((src) => {
@@ -1439,7 +1441,7 @@ function renderDustourExtraImages() {
     loader.innerHTML = `جارٍ تحميل الصورة<span class="loading-dots"></span>`;
 
     const img = document.createElement("img");
-    img.src = src + "?v=" + Date.now();
+    img.src = src;
     img.alt = "صورة توضيحية";
     img.style.display = "none";
 
@@ -1449,14 +1451,15 @@ function renderDustourExtraImages() {
     };
 
     img.onerror = function () {
-      loader.innerHTML = `تعذّر تحميل (${src}) — تأكدي من الاسم أو المسار`;
-      loader.style.color = "#b91c1c";
+      slot.remove();
     };
 
     slot.appendChild(loader);
     slot.appendChild(img);
     box.appendChild(slot);
   });
+
+  dustourExtraLoaded = true;
 }
 
 function toggleDustourExtra() {
