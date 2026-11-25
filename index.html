@@ -134,6 +134,86 @@ body{background-color:#0f172a;display:flex;justify-content:center;align-items:ce
   padding:15px;
   overflow-y:auto;
 }
+.extra-bulb-wrap{
+  margin-top:16px;
+  display:flex;
+  justify-content:center;
+}
+.extra-bulb-btn{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  border:2px solid #f59e0b;
+  background:#fffbeb;
+  font-size:24px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 6px 16px rgba(245,158,11,0.22);
+  transition:transform 0.15s ease, background 0.2s ease;
+}
+.extra-bulb-btn:active{
+  transform:scale(0.92);
+}
+.extra-bulb-panel{
+  margin-top:14px;
+  background:#fffdf7;
+  border:1.5px solid #fde68a;
+  border-radius:var(--radius-md);
+  padding:14px;
+  text-align:right;
+  display:none;
+  animation:slideInView 0.25s ease forwards;
+}
+.extra-bulb-panel.show{
+  display:block;
+}
+.extra-simple-note{
+  font-size:14px;
+  font-weight:700;
+  color:#78350f;
+  line-height:1.65;
+  margin-bottom:12px;
+}
+.extra-images-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.extra-images-list img{
+  width:100%;
+  border-radius:14px;
+  border:1px solid #fde68a;
+  box-shadow:0 6px 14px rgba(0,0,0,0.06);
+  object-fit:cover;
+}
+.extra-img-slot {
+  background: #fffbeb;
+  border: 1px dashed #f59e0b;
+  border-radius: 14px;
+  padding: 12px;
+  text-align: center;
+}
+.extra-img-loading {
+  font-size: 14px;
+  font-weight: 800;
+  color: #b45309;
+  padding: 18px 8px;
+}
+.loading-dots::after {
+  content: "";
+  display: inline-block;
+  width: 24px;
+  text-align: right;
+  animation: loadingDotsAnim 1.2s steps(4, end) infinite;
+}
+@keyframes loadingDotsAnim {
+  0%, 20% { content: ""; }
+  40% { content: "."; }
+  60% { content: ".."; }
+  80%, 100% { content: "..."; }
+}
 .badges-grid{display:grid;grid-template-columns:repeat(1,1fr);gap:15px}
 .badge-box{background:#fff;border-radius:var(--radius-lg);padding:18px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-soft);border:2px solid #e9d5ff;transition:all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);cursor:pointer}
 .badge-box:hover, .badge-box.has-badge{transform:scale(1.02) rotate(-1deg);box-shadow:0 12px 28px rgba(139,92,246,0.2)}
@@ -527,6 +607,15 @@ body{background-color:#0f172a;display:flex;justify-content:center;align-items:ce
       <button class="ayah-exp-btn" onclick="toggleDustourExp()">شرح الآية 💡</button>
       <div id="dustourExpText" class="ayah-explanation">
         يأمرنا الله تعالى بالاتحاد والتمسك بدينه القويم، والبعد عن الفرقة والنزاع لما في ذلك من قوة وصلاح للأمة.
+      </div>
+      <div class="extra-bulb-wrap">
+        <button type="button" class="extra-bulb-btn" title="فكرة وصور إضافية" onclick="toggleDustourExtra()">💡</button>
+      </div>
+      <div id="dustourExtraPanel" class="extra-bulb-panel">
+        <div id="dustourSimpleNote" class="extra-simple-note">
+          حتّى تكوني على أتمّ الجاهزية لمسابقتنا، إليك بطاقات تساعد في استرجاع معلوماتك:
+        </div>
+        <div id="dustourExtraImages" class="extra-images-list"></div>
       </div>
     </div>
   </div>
@@ -1321,6 +1410,68 @@ function resetDhikr(key) {
 function toggleDustourExp() {
     playSound('click');
     document.getElementById('dustourExpText').classList.toggle('show');
+}
+
+const DUSTOUR_EXTRA_IMAGES = [
+  "dustour1.jpg",
+  "dustour2.jpg",
+  "dustour3.jpg",
+  "dustour4.jpg",
+  "dustour5.jpg",
+  "dustour6.jpg",
+  "dustour7.jpg",
+  "dustour8.jpg",
+  "dustour9.jpg",
+  "dustour10.jpg",
+  "dustour11.jpg"
+];
+
+let dustourExtraLoaded = false;
+
+function renderDustourExtraImages() {
+  const box = document.getElementById("dustourExtraImages");
+  if (!box || dustourExtraLoaded) return;
+  box.innerHTML = "";
+
+  DUSTOUR_EXTRA_IMAGES.forEach((src) => {
+    const slot = document.createElement("div");
+    slot.className = "extra-img-slot";
+
+    const loader = document.createElement("div");
+    loader.className = "extra-img-loading";
+    loader.innerHTML = `جارٍ تحميل الصورة<span class="loading-dots"></span>`;
+
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = "صورة توضيحية";
+    img.style.display = "none";
+
+    img.onload = function () {
+      loader.remove();
+      img.style.display = "block";
+    };
+
+    img.onerror = function () {
+      slot.remove();
+    };
+
+    slot.appendChild(loader);
+    slot.appendChild(img);
+    box.appendChild(slot);
+  });
+
+  dustourExtraLoaded = true;
+}
+
+function toggleDustourExtra() {
+  playSound("click");
+  const panel = document.getElementById("dustourExtraPanel");
+  if (!panel) return;
+  const willOpen = !panel.classList.contains("show");
+  panel.classList.toggle("show");
+  if (willOpen) {
+    renderDustourExtraImages();
+  }
 }
 
 function initLineChart(qPer, hPer, sGoal) {
